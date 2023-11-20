@@ -1,12 +1,10 @@
 let ts = require("./t.js");
-const token = ts.one + ts.two + ts.three;
 let { Client, GatewayIntentBits } = require("discord.js");
 let client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.MessageContent,
-        // GatewayIntentBits.GuildMembers,
     ]
 });
 
@@ -15,7 +13,6 @@ client.on("ready", () => {
 })
 
 client.on("messageCreate", async (message) => {
-    // console.log(message)
     if (message.content.startsWith("https://x.com") || message.content.startsWith("https://twitter.com")) {
         let data = message.content.split("com")[1]
         message.reply(`https://vxtwitter.com${data}`);
@@ -24,6 +21,9 @@ client.on("messageCreate", async (message) => {
         message.react("💖");
         message.reply(`hii („• ᴗ •„)`);
     }
- })
+})
 
-client.login(token);
+client.login(ts);
+
+// code written by steve - austin stotts
+// please dont fuck with the token
