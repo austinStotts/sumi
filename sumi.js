@@ -14,4 +14,16 @@ client.on("ready", () => {
     console.log("sumi ready!")
 })
 
-client.login(token)
+client.on("messageCreate", async (message) => {
+    // console.log(message)
+    if (message.content.startsWith("https://x.com") || message.content.startsWith("https://twitter.com")) {
+        let data = message.content.split("com")[1]
+        message.reply(`https://vxtwitter.com${data}`);
+    }
+    else if(message.content.toLowerCase().startsWith("hey sumi") || message.content.toLowerCase().startsWith("hello sumi") || message.content.toLowerCase().startsWith("hi sumi")) {
+        message.react("💖");
+        message.reply(`hii („• ᴗ •„)`);
+    }
+ })
+
+client.login(token);
