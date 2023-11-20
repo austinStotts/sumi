@@ -1,0 +1,23 @@
+{
+  "name": "sumi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node sumi.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/austinStotts/sumi.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/austinStotts/sumi/issues"
+  },
+  "homepage": "https://github.com/austinStotts/sumi#readme",
+  "dependencies": {
+    "discord.js": "^14.14.1"
+  }
+}
