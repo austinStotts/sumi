@@ -8,6 +8,8 @@ let client = new Client({
     ]
 });
 
+let faces = ["(⁀ᗢ⁀)","\\(^ヮ^)/","(„• ᴗ •„)","	⸜(⸝⸝⸝´꒳`⸝⸝⸝)⸝","( = ⩊ = )","(♡˙︶˙♡)","♡＼(￣▽￣)／♡","(´꒳`)♡","	\(〇_ｏ)/","╮(︶▽︶)╭","(*°ｰ°)ﾉ","(⊃｡•́‿•̀｡)⊃","(っ ᵔ◡ᵔ)っ","(｡•̀ᴗ-)✧","	|ʘ‿ʘ)╯","☆ﾐ(o*･ω･)ﾉ","	(=^･ｪ･^=)","U・ᴥ・U","	૮₍ ˶• ༝ •˶ ₎ა"]
+
 client.on("ready", () => {
     console.log("sumi ready!")
 })
@@ -19,7 +21,7 @@ client.on("messageCreate", async (message) => {
     }
     else if(message.content.toLowerCase().startsWith("hey sumi") || message.content.toLowerCase().startsWith("hello sumi") || message.content.toLowerCase().startsWith("hi sumi") || message.content.toLowerCase().startsWith("wsg sumi")) {
         message.react("💖");
-        message.reply(`hii („• ᴗ •„)`);
+        message.reply(`hii ${faces[Math.floor(Math.random()*faces.length)]}`);
     }
 })
 
