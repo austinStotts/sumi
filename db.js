@@ -6,7 +6,7 @@ AWS.config.update({
   secretAccessKey: process.env.SECRETACCESSKEY,
 });
 
-
+let ddb = new AWS.DynamoDB.DocumentClient();
 
 let getStats = (guildid) => {
   ddb.get({TableName: "sumi", Key: { 'guildid': guildid }}, (error, data) => {
@@ -20,7 +20,6 @@ let getStats = (guildid) => {
 }
 
 let addHello = (guildid) => {
-  let ddb = new AWS.DynamoDB.DocumentClient();
   ddb.get({
     TableName: "sumi", 
     Key: { "guildid": guildid }},
@@ -40,7 +39,6 @@ let addHello = (guildid) => {
 }
 
 let addGoodbye = (guildid) => {
-  let ddb = new AWS.DynamoDB.DocumentClient();
   ddb.get({
     TableName: "sumi", 
     Key: { "guildid": guildid }},
@@ -60,7 +58,6 @@ let addGoodbye = (guildid) => {
 }
 
 let addLink = (guildid) => {
-  let ddb = new AWS.DynamoDB.DocumentClient();
   ddb.get({
     TableName: "sumi", 
     Key: { "guildid": guildid }},
@@ -80,7 +77,6 @@ let addLink = (guildid) => {
 }
 
 let addHaiku = (guildid) => {
-  let ddb = new AWS.DynamoDB.DocumentClient();
   ddb.get({
     TableName: "sumi", 
     Key: { "guildid": guildid }},
@@ -99,6 +95,6 @@ let addHaiku = (guildid) => {
   })
 }
 
-module.exports = {getStats, addGoodbye, addHaiku, addHello, addLink}
+// module.exports = {getStats, addGoodbye, addHaiku, addHello, addLink}
 
 
