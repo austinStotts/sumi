@@ -1,4 +1,4 @@
-let ts = require("../t.js");
+let ts = require("./t.js");
 let { Client, GatewayIntentBits } = require("discord.js");
 let client = new Client({
     intents: [
