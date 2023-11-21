@@ -21,6 +21,7 @@ client.on("ready", () => {
 })
 
 client.on("messageCreate", async (message) => {
+    console.log(message)
     if (message.content.startsWith("https://x.com") || message.content.startsWith("https://twitter.com")) {
         let data = message.content.split(".com")[1];
         message.channel.send(`https://vxtwitter.com${data}`);
