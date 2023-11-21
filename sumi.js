@@ -22,7 +22,7 @@ client.on("messageCreate", async (message) => {
     }
     else if(message.content.toLowerCase().startsWith("hey sumi") || message.content.toLowerCase().startsWith("hello sumi") || message.content.toLowerCase().startsWith("hi sumi") || message.content.toLowerCase().startsWith("wsg sumi")) {
         message.react("💖");
-        message.reply(`${greeting[Math.floor(Math.random()*greetings.length)]} ${faces[Math.floor(Math.random()*faces.length)]}`);
+        message.reply(`${greeting[Math.floor(Math.random()*greeting.length)]} ${faces[Math.floor(Math.random()*faces.length)]}`);
     }
 })
 
