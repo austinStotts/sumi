@@ -14,10 +14,10 @@ client.on("ready", () => {
 
 client.on("messageCreate", async (message) => {
     if (message.content.startsWith("https://x.com") || message.content.startsWith("https://twitter.com")) {
-        let data = message.content.split("com")[1]
-        message.reply(`https://vxtwitter.com${data}`);
+        let data = message.content.split("com")[1];
+        message.channel.send(`https://vxtwitter.com${data}`);
     }
-    else if(message.content.toLowerCase().startsWith("hey sumi") || message.content.toLowerCase().startsWith("hello sumi") || message.content.toLowerCase().startsWith("hi sumi")) {
+    else if(message.content.toLowerCase().startsWith("hey sumi") || message.content.toLowerCase().startsWith("hello sumi") || message.content.toLowerCase().startsWith("hi sumi") || message.content.toLowerCase().startsWith("wsg sumi")) {
         message.react("💖");
         message.reply(`hii („• ᴗ •„)`);
     }
