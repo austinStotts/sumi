@@ -32,7 +32,8 @@ client.on("messageCreate", async (message) => {
         message.reply(`${leaving[Math.floor(Math.random()*leaving.length)]} ${faces[Math.floor(Math.random()*faces.length)]}`);
     } 
     else if(message.author.username == "HaikuBot" && message.author.bot && message.embeds.length > 0) {
-        message.channel.send("great haiku");
+        setTimeout(() => { message.channel.send("great haiku"); }, 500);
+        
     }
 })
 
