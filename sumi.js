@@ -1,5 +1,5 @@
 let ts = require("./t.js");
-let { Client, GatewayIntentBits } = require("discord.js");
+let { Client, GatewayIntentBits, EmbedBuilder } = require("discord.js");
 let client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
@@ -18,16 +18,9 @@ AWS.config.update({
 
 let ddb = new AWS.DynamoDB.DocumentClient();
 
-let getStats = async (guildid) => {
-  ddb.get({TableName: "sumi", Key: { 'guildid': guildid }}, (error, data) => {
-    if(error) {
-      console.log(error);
-      console.log("ERROR\n\n\n")
-    } else {
-      return data;
-    }
-  })
-}
+// let getStats = async (guildid) => {
+
+// }
 
 let makeGuild = (guild) => {
     ddb.put({
@@ -140,9 +133,11 @@ let addHaiku = (guild) => {
 }
 
 let faces = ["(⁀ᗢ⁀)","\\(^ヮ^)/","(„• ᴗ •„)","	⸜(⸝⸝⸝´꒳`⸝⸝⸝)⸝","( = ⩊ = )","(♡˙︶˙♡)","♡＼(￣▽￣)／♡","(´꒳`)♡","	\(〇_ｏ)/","╮(︶▽︶)╭","(*°ｰ°)ﾉ","(⊃｡•́‿•̀｡)⊃","(っ ᵔ◡ᵔ)っ","(｡•̀ᴗ-)✧","	|ʘ‿ʘ)╯","☆ﾐ(o*･ω･)ﾉ","	(=^･ｪ･^=)","U・ᴥ・U","	૮₍ ˶• ༝ •˶ ₎ა","	(; ・_・)――――C","( ˘▽˘)っ♨","	-●●●-ｃ(・・ )","( ・・)つ-●●●","( o˘◡˘o) ┌iii┐","	(〜￣▽￣)〜","(~‾▽‾)~","✺◟( • ω • )◞✺","	( ͠° ͟ʖ ͡°)","( . •́ _ʖ •̀ .)","(⌐■_■)","ଘ(੭ˊᵕˋ)੭* ੈ✩‧₊˚","(ノ°∀°)ノ⌒･*:.｡. .｡.:*･゜ﾟ･*☆","	(/￣ー￣)/~~☆’.･.･:★’.･.･:☆"]
-let greeting = ["haii", "hi", "おはよう!", "おやすみ...", "こんにちは", "hey", "hello!", "greetings!", "Hola", "hi", "haaaaay", "hewwo", "HEY!", "hiiii", "boo!"];
+let greeting = ["haii", "hi", "おはよう!", "おやすみ...", "こんにちは", "hey", "hello!", "greetings!", "Hola", "hi", "haaaaay", "hewwo", "HEY!", "hiiii", "boo!", "RAAAAHHH", "erm"];
 let leaving = ["bye", "see you!", "see you", "bye bye", "goodnight!", "goodnight", "gn", "gn!", "sweet dreams"];
-let adjs = ["great", "amazing", "cool", "poggers", "epic", "sick ass", "dang good", "good", "super", "super duper", "astonishing", "brilliant"]
+let adjs = ["great", "amazing", "cool", "poggers", "epic", "sick ass", "dang good", "good", "super", "super duper", "astonishing", "brilliant"];
+let emojis = ["💕","💓","💞","💖","💗","❤️","🌷","💐","💯","✔️"]
+
 
 client.on("ready", () => {
     console.log("sumi ready!");
@@ -157,12 +152,12 @@ client.on("messageCreate", async (message) => {
         addLink(message.channel.guild);
     }
     else if(message.content.toLowerCase().startsWith("hey sumi") || message.content.toLowerCase().startsWith("hello sumi") || message.content.toLowerCase().startsWith("hi sumi") || message.content.toLowerCase().startsWith("wsg sumi") || message.content.toLowerCase().startsWith("gm sumi")) {
-        message.react("💖");
+        message.react(`${emojis[Math.floor(Math.random()*emojis.length)]}`);
         message.reply(`${greeting[Math.floor(Math.random()*greeting.length)]} ${faces[Math.floor(Math.random()*faces.length)]}`);
         addHello(message.channel.guild);
     }
     else if(message.content.toLowerCase().startsWith("bye sumi") || message.content.toLowerCase().startsWith("goodnight sumi") || message.content.toLowerCase().startsWith("gn sumi") || message.content.toLowerCase().startsWith("peace sumi")) {
-        message.react("💖");
+        message.react(`${emojis[Math.floor(Math.random()*emojis.length)]}`);
         message.reply(`${leaving[Math.floor(Math.random()*leaving.length)]} ${faces[Math.floor(Math.random()*faces.length)]}`);
         addGoodbye(message.channel.guild);
     } 
@@ -172,15 +167,28 @@ client.on("messageCreate", async (message) => {
     } else {
         if(message.content.toLowerCase().startsWith("sumi")) {
             if(message.content.split(" ")[1] == "stats") {
-                let stats = await getStats(message.channel.guildId);
-                message.channel.send(`
-                sumi stats for: ${stats.guildname}
+              ddb.get({TableName: "sumi", Key: { 'guildid': message.guildId }}, (error, stats) => {
+                if(error) {
+                  console.log(error);
+                  console.log("ERROR\n\n\n")
+                } else {
+                  console.log(stats)
+                  let statsEmbed = new EmbedBuilder()
+                  .setColor(0x0099FF)
+                  .setTitle(`${stats.Item.guildname} stats`)
+                  .addFields(
+                    { name: 'links', value: "" + stats.Item.numberOfLinks },
+                    { name: 'hellos', value: "" + stats.Item.numberOfHellos },
+                    { name: 'goodbyes', value: "" + stats.Item.numberOfGoodbyes },
+                    { name: 'haikus', value: "" + stats.Item.numberOfHaikus },
+                  )
+                  .setTimestamp()
+                  .setFooter({ text: 'with 💖 from sumi' });
 
-                number of hellos: ${stats.numberOfHellos}
-                number of hellos: ${stats.numberOfGoodbyes}
-                number of hellos: ${stats.numberOfLinks}
-                number of hellos: ${stats.numberOfHaikus}
-                `)
+                  message.channel.send({embeds: [statsEmbed]})
+                }
+              })
+
             }
         }
     }
