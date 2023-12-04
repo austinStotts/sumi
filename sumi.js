@@ -163,7 +163,7 @@ client.on("ready", () => {
 
 client.on("messageCreate", async (message) => {
     updageIconID(message.guild);
-    console.log(message.guild); // uncomment to print all messages
+    console.log(message.author); // uncomment to print all messages
     if (message.content.startsWith("https://x.com") || message.content.startsWith("https://twitter.com")) {
         let data = message.content.split(".com")[1];
         message.channel.send(`https://vxtwitter.com${data}`);
@@ -206,18 +206,49 @@ client.on("messageCreate", async (message) => {
                 }
               })
 
-            } else if(message.content.split(" ")[1] == "banner") {
+            } else if(message.content.split(" ")[1] == "serverbanner") {
               if(message.guild.banner == null) {
                 message.channel.send("sorry, this server does not have a banner :(");
               } else {
                 message.channel.send(`https://cdn.discordapp.com/banners/${message.guild.id}/${message.guild.banner}.png?size=4096`);
               }
-            } else if(message.content.split(" ")[1] == "splash") {
+            } else if(message.content.split(" ")[1] == "serversplash") {
               if(message.guild.splash == null) {
                 message.channel.send("sorry, this server does not have a splash image :(");
               } else {
                 message.channel.send(`https://cdn.discordapp.com/splashes/${message.guild.id}/${message.guild.splash}.png?size=4096`);
               }
+            } else if(message.content.split(" ")[1] == "pfp") {
+              if(message.author.avatar != undefined) {
+                message.channel.send(message.author.avatarURL({size:4096}));
+              } else {
+                message.channel.send("as far as i can tell you do not have a profile picture...");
+              }
+            } 
+            else if(message.content.split(" ")[1] == "banner") {
+              if(message.author.banner != undefined) {
+                message.channel.send(message.author.bannerURL({size:4096}));
+              } else {
+                message.channel.send("i cannot find a banner image for you...");
+              }
+            }
+            else if(message.content.split(" ")[1] == "help") {
+              message.channel.send(`\`any x.com or twitter.com link will automatically be sent again as a vxtwitter.com link to allow for embeds
+use the following "sumi" commands to get server info / other usefull things:
+
+<sumi help> - will show this message
+
+<sumi serverbanner> - sends this server's banner in the largest resolution discord has as a .png
+<sumi serversplash> - sends this server's splash image in the largest resolution discord has as a .png
+
+<sumi pfp> - send the user's avatar in the largest size discord has available
+<sumi banner> - send the user's profile banner in the largest size discord has available
+
+<sumi stats> - send usage counts for sumi's primary functions
+
+<hi/hello/wsg sumi> - to say hello
+<bye/goodbye/gn> - to say goodbye
+\``)
             }
         }
     }
