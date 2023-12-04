@@ -18,10 +18,6 @@ AWS.config.update({
 
 let ddb = new AWS.DynamoDB.DocumentClient();
 
-// let getStats = async (guildid) => {
-
-// }
-
 let makeGuild = (guild) => {
     ddb.put({
         TableName: "sumi",
@@ -132,6 +128,27 @@ let addHaiku = (guild) => {
   })
 }
 
+let updageIconID = (guild) => {
+  ddb.get({
+    TableName: "sumi", 
+    Key: { "guildid": guild.id }},
+    (error, data) => {
+        if(error) { console.log(error) }
+      else { 
+        if(data.Item.guildicon != guild.icon) {
+          data.Item.guildicon = guild.icon;
+          ddb.put({
+            TableName: "sumi",
+            Item: data.Item
+          }, (error, response) => {
+            if(error) { console.log(error) }
+            else { console.log(response, "RESPONSE") }
+          })
+        }
+      }
+  })
+}
+
 let faces = ["0.0","<3",":3","(⁀ᗢ⁀)","\\(^ヮ^)/","(„• ᴗ •„)","	⸜(⸝⸝⸝´꒳`⸝⸝⸝)⸝","( = ⩊ = )","(♡˙︶˙♡)","♡＼(￣▽￣)／♡","(´꒳`)♡","	\(〇_ｏ)/","╮(︶▽︶)╭","(*°ｰ°)ﾉ","(⊃｡•́‿•̀｡)⊃","(っ ᵔ◡ᵔ)っ","(｡•̀ᴗ-)✧","	|ʘ‿ʘ)╯","☆ﾐ(o*･ω･)ﾉ","	(=^･ｪ･^=)","U・ᴥ・U","	૮₍ ˶• ༝ •˶ ₎ა","	(; ・_・)――――C","( ˘▽˘)っ♨","	-●●●-ｃ(・・ )","( ・・)つ-●●●","( o˘◡˘o) ┌iii┐","	(〜￣▽￣)〜","(~‾▽‾)~","✺◟( • ω • )◞✺","	( ͠° ͟ʖ ͡°)","( . •́ _ʖ •̀ .)","(⌐■_■)","ଘ(੭ˊᵕˋ)੭* ੈ✩‧₊˚","(ノ°∀°)ノ⌒･*:.｡. .｡.:*･゜ﾟ･*☆","	(/￣ー￣)/~~☆’.･.･:★’.･.･:☆"]
 let greeting = ["haii", "hi", "おはよう!", "おやすみ...", "こんにちは", "hey", "hello!", "greetings!", "Hola", "hi", "haaaaay", "hewwo", "HEY!", "hiiii", "boo!", "RAAAAHHH", "erm", "可愛い"];
 let leaving = ["bye", "see you!", "see you", "bye bye", "goodnight!", "goodnight", "gn", "gn!", "sweet dreams"];
@@ -145,7 +162,8 @@ client.on("ready", () => {
 
 
 client.on("messageCreate", async (message) => {
-    // console.log(message); // uncomment to print all messages
+    updageIconID(message.guild);
+    // console.log(message.guild); // uncomment to print all messages
     if (message.content.startsWith("https://x.com") || message.content.startsWith("https://twitter.com")) {
         let data = message.content.split(".com")[1];
         message.channel.send(`https://vxtwitter.com${data}`);
@@ -184,7 +202,7 @@ client.on("messageCreate", async (message) => {
                   .setTimestamp()
                   .setFooter({ text: 'with 💖 from sumi' });
 
-                  message.channel.send({embeds: [statsEmbed]})
+                  message.channel.send({embeds: [statsEmbed]});
                 }
               })
 
