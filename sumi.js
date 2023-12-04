@@ -163,7 +163,7 @@ client.on("ready", () => {
 
 client.on("messageCreate", async (message) => {
     updageIconID(message.guild);
-    // console.log(message.guild); // uncomment to print all messages
+    console.log(message.guild); // uncomment to print all messages
     if (message.content.startsWith("https://x.com") || message.content.startsWith("https://twitter.com")) {
         let data = message.content.split(".com")[1];
         message.channel.send(`https://vxtwitter.com${data}`);
@@ -206,6 +206,18 @@ client.on("messageCreate", async (message) => {
                 }
               })
 
+            } else if(message.content.split(" ")[1] == "banner") {
+              if(message.guild.banner == null) {
+                message.channel.send("sorry, this server does not have a banner :(");
+              } else {
+                message.channel.send(`https://cdn.discordapp.com/banners/${message.guild.id}/${message.guild.banner}.png?size=4096`);
+              }
+            } else if(message.content.split(" ")[1] == "splash") {
+              if(message.guild.splash == null) {
+                message.channel.send("sorry, this server does not have a splash image :(");
+              } else {
+                message.channel.send(`https://cdn.discordapp.com/splashes/${message.guild.id}/${message.guild.splash}.png?size=4096`);
+              }
             }
         }
     }
