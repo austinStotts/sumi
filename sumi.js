@@ -28,7 +28,8 @@ let makeGuild = (guild) => {
             "numberOfHellos": 0,
             "numberOfGoodbyes": 0,
             "numberOfHaikus": 0,
-            "numberOfLinks": 0
+            "numberOfLinks": 0,
+            "isSendingLinks": true
         }
     }, (error, response) => {
         if(error) { console.log(error) }
@@ -149,6 +150,37 @@ let updageIconID = (guild) => {
   })
 }
 
+let toggleLinks = (guild) => {
+  ddb.get({
+    TableName: "sumi", 
+    Key: { "guildid": guild.id }},
+    (error, data) => {
+        if(error) { console.log(error) }
+      else { 
+        data.Item.isSendingLinks = !data.Item.isSendingLinks;
+        ddb.put({
+          TableName: "sumi",
+          Item: data.Item
+        }, (error, response) => {
+          if(error) { console.log(error) }
+          else { console.log(response, "RESPONSE") }
+        })
+      }
+  })
+}
+
+let getLinkStatus = (guild) => {
+  ddb.get({
+    TableName: "sumi", 
+    Key: { "guildid": guild.id }},
+    (error, data) => {
+        if(error) { console.log(error) }
+      else {
+        return data.Item.isSendingLinks;
+      }
+  })
+}
+
 let faces = ["0.0","<3",":3","(⁀ᗢ⁀)","\\(^ヮ^)/","(„• ᴗ •„)","	⸜(⸝⸝⸝´꒳`⸝⸝⸝)⸝","( = ⩊ = )","(♡˙︶˙♡)","♡＼(￣▽￣)／♡","(´꒳`)♡","	\(〇_ｏ)/","╮(︶▽︶)╭","(*°ｰ°)ﾉ","(⊃｡•́‿•̀｡)⊃","(っ ᵔ◡ᵔ)っ","(｡•̀ᴗ-)✧","	|ʘ‿ʘ)╯","☆ﾐ(o*･ω･)ﾉ","	(=^･ｪ･^=)","U・ᴥ・U","	૮₍ ˶• ༝ •˶ ₎ა","	(; ・_・)――――C","( ˘▽˘)っ♨","	-●●●-ｃ(・・ )","( ・・)つ-●●●","( o˘◡˘o) ┌iii┐","	(〜￣▽￣)〜","(~‾▽‾)~","✺◟( • ω • )◞✺","	( ͠° ͟ʖ ͡°)","( . •́ _ʖ •̀ .)","(⌐■_■)","ଘ(੭ˊᵕˋ)੭* ੈ✩‧₊˚","(ノ°∀°)ノ⌒･*:.｡. .｡.:*･゜ﾟ･*☆","	(/￣ー￣)/~~☆’.･.･:★’.･.･:☆"]
 let greeting = ["haii", "hi", "おはよう!", "おやすみ...", "こんにちは", "hey", "hello!", "greetings!", "Hola", "hi", "haaaaay", "hewwo", "HEY!", "hiiii", "boo!", "RAAAAHHH", "erm", "可愛い"];
 let leaving = ["bye", "see you!", "see you", "bye bye", "goodnight!", "goodnight", "gn", "gn!", "sweet dreams"];
@@ -161,13 +193,26 @@ client.on("ready", () => {
 })
 
 
-client.on("messageCreate", async (message) => {
+client.on("messageCreate", (message) => {
     updageIconID(message.guild);
-    console.log(message.author); // uncomment to print all messages
+    // console.log(message.author); // uncomment to print all messages
+
     if (message.content.startsWith("https://x.com") || message.content.startsWith("https://twitter.com")) {
-        let data = message.content.split(".com")[1];
-        message.channel.send(`https://vxtwitter.com${data}`);
-        addLink(message.channel.guild);
+      ddb.get({
+        TableName: "sumi", 
+        Key: { "guildid": message.guild.id }},
+        (error, data) => {
+            if(error) { console.log(error) }
+          else {
+            if(data.Item.isSendingLinks) {
+              let data = message.content.split(".com")[1];
+              message.channel.send(`https://vxtwitter.com${data}`);
+              addLink(message.channel.guild);
+            } else {
+              console.log("links are turned off")
+            }
+          }
+      })
     }
     else if(message.content.toLowerCase().startsWith("hey sumi") || message.content.toLowerCase().startsWith("hello sumi") || message.content.toLowerCase().startsWith("hi sumi") || message.content.toLowerCase().startsWith("wsg sumi") || message.content.toLowerCase().startsWith("gm sumi")) {
         message.react(`${emojis[Math.floor(Math.random()*emojis.length)]}`);
@@ -249,9 +294,13 @@ use the following "sumi" commands to get server info / other usefull things:
 <hi/hello/wsg sumi> - to say hello
 <bye/goodbye/gn> - to say goodbye
 \``)
-            }
+          }
+          else if(message.content.split(" ")[1] == "toggle") {
+            toggleLinks(message.guild);
+            message.channel.send("ok! :3");
+          }
         }
-    }
+  }
 })
 
 client.login(ts);
