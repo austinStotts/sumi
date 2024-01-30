@@ -187,16 +187,23 @@ let leaving = ["bye", "see you!", "see you", "bye bye", "goodnight!", "goodnight
 let adjs = ["great", "amazing", "cool", "poggers", "epic", "sick ass", "dang good", "good", "super", "super duper", "astonishing", "brilliant", "すごい", "lame ass", "borring", "silly"];
 let emojis = ["💕","💓","💞","💖","💗","❤️","🌷","💐","💯","✔️"];
 
-
+let birthdays = [{name: "steve ♡(>ᴗ•)", month: 0, day: 28}, {name: "wisp ( o˘◡˘o) ┌iii┐", month: 0, day: 31}];
 
 client.on("ready", () => {
     console.log("sumi ready!");
 
     setInterval(() => {
       let date = new Date();
-      if(date.getMonth() == "0" && date.getDate() == "28") {
-        client.user.setActivity("hbd steve ♡(>ᴗ•)");
+      let month = date.getMonth(); //0
+      let day = date.getDate(); //1
+      let isBirthday = false;
+      for(let i = 0; i < birthdays.length; i++) {
+        if(month == birthdays[i].month && day == birthdays[i].day) {
+          client.user.setActivity(`hbd ${birthdays[i].name}`);
+          isBirthday = true;
+        }
       }
+      if(!isBirthday) { client.user.setActivity("૮₍ ˶• ༝ •˶ ₎ა") }
     }, 10000)
 })
 
