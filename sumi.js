@@ -259,6 +259,7 @@ client.on("messageCreate", (message) => {
                     { name: 'hellos', value: "" + stats.Item.numberOfHellos },
                     { name: 'goodbyes', value: "" + stats.Item.numberOfGoodbyes },
                     { name: 'haikus', value: "" + stats.Item.numberOfHaikus },
+                    { name: 'send links?', value: "" + stats.Item.isSendingLinks },
                   )
                   .setTimestamp()
                   .setFooter({ text: 'with 💖 from sumi' });
@@ -306,9 +307,15 @@ use the following "sumi" commands to get server info / other usefull things:
 <sumi banner> - send the user's profile banner in the largest size discord has available
 
 <sumi stats> - send usage counts for sumi's primary functions
+<sumi mystats>* - show personal counts and settings (coming soon)
+
+<sumi toggle> - turn on/off link sending for entire server
+<sumi toggleme>* - turn on/off link sending for individual (coming soon)
 
 <hi/hello/wsg sumi> - to say hello
-<bye/goodbye/gn> - to say goodbye
+<bye/goodbye/gn sumi> - to say goodbye
+
+*server settings override any personal settings
 \``)
           }
           else if(message.content.split(" ")[1] == "toggle") {
