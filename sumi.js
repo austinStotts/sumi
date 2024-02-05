@@ -29,7 +29,8 @@ let makeGuild = (guild) => {
             "numberOfGoodbyes": 0,
             "numberOfHaikus": 0,
             "numberOfLinks": 0,
-            "isSendingLinks": true
+            "isSendingLinks": true,
+            "members": {}
         }
     }, (error, response) => {
         if(error) { console.log(error) }
@@ -169,6 +170,25 @@ let toggleLinks = (guild) => {
   })
 }
 
+let toggleUserLinks = (userid, guildid) => {
+  ddb.get({
+    TableName: "sumi", 
+    Key: { "guildid": guildid }},
+    (error, data) => {
+        if(error) { console.log(error) }
+      else { 
+        data.Item.members[userid].sendLinks = !data.Item.members[userid].sendLinks;
+        ddb.put({
+          TableName: "sumi",
+          Item: data.Item
+        }, (error, response) => {
+          if(error) { console.log(error) }
+          else { console.log(response, "RESPONSE") }
+        })
+      }
+  })
+}
+
 let getLinkStatus = (guild) => {
   ddb.get({
     TableName: "sumi", 
@@ -180,6 +200,36 @@ let getLinkStatus = (guild) => {
       }
   })
 }
+
+let addUser = (userid, guildid) => {
+  ddb.get({
+    TableName: "sumi", 
+    Key: { "guildid": guildid }},
+    (error, data) => {
+        if(error) { console.log(error) }
+      else { 
+        // console.log(data.Item.members);
+        let member = data.Item.members[userid];
+        if(member != undefined) {
+          // user is already in db
+        } else {
+          // user is new > add to db
+          data.Item.members[userid] = { sendLinks: false, }
+          ddb.put({
+            TableName: "sumi",
+            Item : data.Item
+          }, (error, data) => {
+            if(error) {
+              console.log(error);
+            } else {
+              // user was added
+            }
+          })
+        }
+      }
+  })
+}
+
 
 let faces = ["0.0","<3",":3","(⁀ᗢ⁀)","\\(^ヮ^)/","(„• ᴗ •„)","	⸜(⸝⸝⸝´꒳`⸝⸝⸝)⸝","( = ⩊ = )","(♡˙︶˙♡)","♡＼(￣▽￣)／♡","(´꒳`)♡","	\(〇_ｏ)/","╮(︶▽︶)╭","(*°ｰ°)ﾉ","(⊃｡•́‿•̀｡)⊃","(っ ᵔ◡ᵔ)っ","(｡•̀ᴗ-)✧","	|ʘ‿ʘ)╯","☆ﾐ(o*･ω･)ﾉ","	(=^･ｪ･^=)","U・ᴥ・U","	૮₍ ˶• ༝ •˶ ₎ა","	(; ・_・)――――C","( ˘▽˘)っ♨","	-●●●-ｃ(・・ )","( ・・)つ-●●●","( o˘◡˘o) ┌iii┐","	(〜￣▽￣)〜","(~‾▽‾)~","✺◟( • ω • )◞✺","	( ͠° ͟ʖ ͡°)","( . •́ _ʖ •̀ .)","(⌐■_■)","ଘ(੭ˊᵕˋ)੭* ੈ✩‧₊˚","(ノ°∀°)ノ⌒･*:.｡. .｡.:*･゜ﾟ･*☆","	(/￣ー￣)/~~☆’.･.･:★’.･.･:☆"]
 let greeting = ["haii", "hi", "おはよう!", "おやすみ...", "こんにちは", "hey", "hello!", "greetings!", "Hola", "hi", "haaaaay", "hewwo", "HEY!", "hiiii", "boo!", "RAAAAHHH", "erm", "可愛い"];
@@ -211,7 +261,8 @@ client.on("ready", () => {
 
 client.on("messageCreate", (message) => {
     updageIconID(message.guild);
-    // console.log(message.author); // uncomment to print all messages
+    addUser(message.author.id, message.guild.id);
+    // console.log(message); // uncomment to print all messages
 
     if (message.content.startsWith("https://x.com") || message.content.startsWith("https://twitter.com")) {
       ddb.get({
@@ -220,9 +271,10 @@ client.on("messageCreate", (message) => {
         (error, data) => {
             if(error) { console.log(error) }
           else {
-            if(data.Item.isSendingLinks) {
+            if(data.Item.isSendingLinks && data.Item.members[message.author.id].sendLinks) {
               let data = message.content.split(".com")[1];
-              message.channel.send(`https://vxtwitter.com${data}`);
+              message.delete();
+              message.channel.send(`${message.author.toString()}: https://vxtwitter.com${data}`);
               addLink(message.channel.guild);
             } else {
               console.log("links are turned off")
@@ -318,9 +370,13 @@ use the following "sumi" commands to get server info / other usefull things:
 *server settings override any personal settings
 \``)
           }
-          else if(message.content.split(" ")[1] == "toggle") {
+          else if(message.content.split(" ")[1] == "toggle") { // toggle server
             toggleLinks(message.guild);
             message.channel.send("ok! :3");
+          }
+          else if(message.content.split(" ")[1] == "toggleme") { // toggle user
+            toggleUserLinks(message.author.id, message.guild.id);
+            message.channel.send(`got it ${message.author.displayName}! ( ˘▽˘)っ♨`);
           }
         }
   }
