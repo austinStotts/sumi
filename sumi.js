@@ -260,125 +260,124 @@ client.on("ready", () => {
 
 
 client.on("messageCreate", (message) => {
-    updageIconID(message.guild);
-    addUser(message.author.id, message.guild.id);
-    // console.log(message); // uncomment to print all messages
+  updageIconID(message.guild);
+  addUser(message.author.id, message.guild.id);
+  // console.log(message); // uncomment to print all messages
 
-    if (message.content.startsWith("https://x.com") || message.content.startsWith("https://twitter.com")) {
-      ddb.get({
-        TableName: "sumi", 
-        Key: { "guildid": message.guild.id }},
-        (error, data) => {
-            if(error) { console.log(error) }
-          else {
-            if(data.Item.isSendingLinks && data.Item.members[message.author.id].sendLinks) {
-              let data = message.content.split(".com")[1];
-              message.suppressEmbeds();
-              message.reply(`https://vxtwitter.com${data}`);
-              addLink(message.channel.guild);
-            } else {
-              console.log("links are turned off")
-            }
-          }
-      })
-    }
-    else if(message.content.toLowerCase().startsWith("hey sumi") || message.content.toLowerCase().startsWith("hello sumi") || message.content.toLowerCase().startsWith("hi sumi") || message.content.toLowerCase().startsWith("wsg sumi") || message.content.toLowerCase().startsWith("gm sumi")) {
-        message.react(`${emojis[Math.floor(Math.random()*emojis.length)]}`);
-        message.reply(`${greeting[Math.floor(Math.random()*greeting.length)]} ${faces[Math.floor(Math.random()*faces.length)]}`);
-        addHello(message.channel.guild);
-    }
-    else if(message.content.toLowerCase().startsWith("bye sumi") || message.content.toLowerCase().startsWith("goodnight sumi") || message.content.toLowerCase().startsWith("gn sumi") || message.content.toLowerCase().startsWith("peace sumi")) {
-        message.react(`${emojis[Math.floor(Math.random()*emojis.length)]}`);
-        message.reply(`${leaving[Math.floor(Math.random()*leaving.length)]} ${faces[Math.floor(Math.random()*faces.length)]}`);
-        addGoodbye(message.channel.guild);
-    } 
-    else if(message.author.username == "HaikuBot" && message.author.bot && message.embeds.length > 0) {
-        setTimeout(() => { message.channel.send(`${adjs[Math.floor(Math.random()*adjs.length)]} haiku`); }, 500);
-        addHaiku(message.channel.guild);
-    } else {
-        if(message.content.toLowerCase().startsWith("sumi")) {
-            if(message.content.split(" ")[1] == "stats") {
-              ddb.get({TableName: "sumi", Key: { 'guildid': message.guildId }}, (error, stats) => {
-                if(error) {
-                  console.log(error);
-                } else {
-                  let statsEmbed = new EmbedBuilder()
-                  .setColor(0xF78DA7)
-                  .setTitle(`${stats.Item.guildname}`)
-                  .setThumbnail(`https://cdn.discordapp.com/icons/${stats.Item.guildid}/${stats.Item.guildicon}.png`)
-                  .addFields(
-                    { name: 'links', value: "" + stats.Item.numberOfLinks },
-                    { name: 'hellos', value: "" + stats.Item.numberOfHellos },
-                    { name: 'goodbyes', value: "" + stats.Item.numberOfGoodbyes },
-                    { name: 'haikus', value: "" + stats.Item.numberOfHaikus },
-                    { name: 'send links?', value: "" + stats.Item.isSendingLinks },
-                  )
-                  .setTimestamp()
-                  .setFooter({ text: 'with 💖 from sumi' });
-
-                  message.channel.send({embeds: [statsEmbed]});
-                }
-              })
-
-            } else if(message.content.split(" ")[1] == "serverbanner") {
-              if(message.guild.banner == null) {
-                message.channel.send("sorry, this server does not have a banner :(");
-              } else {
-                message.channel.send(`https://cdn.discordapp.com/banners/${message.guild.id}/${message.guild.banner}.png?size=4096`);
-              }
-            } else if(message.content.split(" ")[1] == "serversplash") {
-              if(message.guild.splash == null) {
-                message.channel.send("sorry, this server does not have a splash image :(");
-              } else {
-                message.channel.send(`https://cdn.discordapp.com/splashes/${message.guild.id}/${message.guild.splash}.png?size=4096`);
-              }
-            } else if(message.content.split(" ")[1] == "pfp") {
-              if(message.author.avatar != undefined) {
-                message.channel.send(message.author.avatarURL({size:4096}));
-              } else {
-                message.channel.send("as far as i can tell you do not have a profile picture...");
-              }
-            } 
-            else if(message.content.split(" ")[1] == "banner") {
-              if(message.author.banner != undefined) {
-                message.channel.send(message.author.bannerURL({size:4096}));
-              } else {
-                message.channel.send("i cannot find a banner image for you...");
-              }
-            }
-            else if(message.content.split(" ")[1] == "help") {
-              message.channel.send(`\`any x.com or twitter.com link will automatically be sent again as a vxtwitter.com link to allow for embeds
-use the following "sumi" commands to get server info / other usefull things:
-
-<sumi help> - will show this message
-
-<sumi serverbanner> - sends this server's banner in the largest resolution discord has as a .png
-<sumi serversplash> - sends this server's splash image in the largest resolution discord has as a .png
-
-<sumi pfp> - send the user's avatar in the largest size discord has available
-<sumi banner> - send the user's profile banner in the largest size discord has available
-
-<sumi stats> - send usage counts for sumi's primary functions
-<sumi mystats>* - show personal counts and settings (coming soon)
-
-<sumi toggle> - turn on/off link sending for entire server
-<sumi toggleme>* - turn on/off link sending for individual (coming soon)
-
-<hi/hello/wsg sumi> - to say hello
-<bye/goodbye/gn sumi> - to say goodbye
-
-*server settings override any personal settings
-\``)
-          }
-          else if(message.content.split(" ")[1] == "toggle") { // toggle server
-            toggleLinks(message.guild);
-            message.channel.send("ok! :3");
-          }
-          else if(message.content.split(" ")[1] == "toggleme") { // toggle user
-            toggleUserLinks(message.author.id, message.guild.id);
-            message.channel.send(`got it ${message.author.displayName}! ( ˘▽˘)っ♨`);
+  if (message.content.startsWith("https://x.com") || message.content.startsWith("https://twitter.com")) {
+    ddb.get({
+      TableName: "sumi", 
+      Key: { "guildid": message.guild.id }},
+      (error, data) => {
+          if(error) { console.log(error) }
+        else {
+          if(data.Item.isSendingLinks && data.Item.members[message.author.id].sendLinks) {
+            let data = message.content.split(".com")[1];
+            message.suppressEmbeds();
+            message.reply(`https://vxtwitter.com${data}`);
+            addLink(message.channel.guild);
+          } else {
+            console.log("links are turned off")
           }
         }
+    })
+  }
+  // hey sumi
+  else if(message.content.toLowerCase().startsWith("hey sumi") || message.content.toLowerCase().startsWith("hello sumi") || message.content.toLowerCase().startsWith("hi sumi") || message.content.toLowerCase().startsWith("wsg sumi") || message.content.toLowerCase().startsWith("gm sumi")) {
+      message.react(`${emojis[Math.floor(Math.random()*emojis.length)]}`);
+      message.reply(`${greeting[Math.floor(Math.random()*greeting.length)]} ${faces[Math.floor(Math.random()*faces.length)]}`);
+      addHello(message.channel.guild);
+  }
+  // bye sumi
+  else if(message.content.toLowerCase().startsWith("bye sumi") || message.content.toLowerCase().startsWith("goodnight sumi") || message.content.toLowerCase().startsWith("gn sumi") || message.content.toLowerCase().startsWith("peace sumi")) {
+      message.react(`${emojis[Math.floor(Math.random()*emojis.length)]}`);
+      message.reply(`${leaving[Math.floor(Math.random()*leaving.length)]} ${faces[Math.floor(Math.random()*faces.length)]}`);
+      addGoodbye(message.channel.guild);
+  } 
+  // reply to haikubot
+  else if(message.author.username == "HaikuBot" && message.author.bot && message.embeds.length > 0) {
+      setTimeout(() => { message.channel.send(`${adjs[Math.floor(Math.random()*adjs.length)]} haiku`); }, 500);
+      addHaiku(message.channel.guild);
+  } 
+
+  else if(message.mentions.repliedUser.id == "1176256487035785257" && message.content.toLowerCase() == "delete") {
+    message.channel.messages.delete(message.reference.messageId);
+    message.delete();
+  }
+  // <sumi> commands
+  else {
+    if(message.content.toLowerCase().startsWith("sumi")) {
+      // <stats> show server stats
+      if(message.content.split(" ")[1] == "stats") {
+        ddb.get({TableName: "sumi", Key: { 'guildid': message.guildId }}, (error, stats) => {
+          if(error) {
+            console.log(error);
+          } else {
+            let statsEmbed = new EmbedBuilder()
+            .setColor(0xF78DA7)
+            .setTitle(`${stats.Item.guildname}`)
+            .setThumbnail(`https://cdn.discordapp.com/icons/${stats.Item.guildid}/${stats.Item.guildicon}.png`)
+            .addFields(
+              { name: 'links', value: "" + stats.Item.numberOfLinks },
+              { name: 'hellos', value: "" + stats.Item.numberOfHellos },
+              { name: 'goodbyes', value: "" + stats.Item.numberOfGoodbyes },
+              { name: 'haikus', value: "" + stats.Item.numberOfHaikus },
+              { name: 'send links?', value: "" + stats.Item.isSendingLinks },
+            )
+            .setTimestamp()
+            .setFooter({ text: 'with 💖 from sumi' });
+
+            message.channel.send({embeds: [statsEmbed]});
+          }
+        })
+      }
+      // <serverbanner> send the server's banner image
+      else if(message.content.split(" ")[1] == "serverbanner") {
+        if(message.guild.banner == null) {
+          message.channel.send("sorry, this server does not have a banner :(");
+        } else {
+          message.channel.send(`https://cdn.discordapp.com/banners/${message.guild.id}/${message.guild.banner}.png?size=4096`);
+        }
+      } 
+      // <serversplash> send the server's splash image
+      else if(message.content.split(" ")[1] == "serversplash") {
+        if(message.guild.splash == null) {
+          message.channel.send("sorry, this server does not have a splash image :(");
+        } else {
+          message.channel.send(`https://cdn.discordapp.com/splashes/${message.guild.id}/${message.guild.splash}.png?size=4096`);
+        }
+      } 
+      // <pfp> send the users profile picture
+      else if(message.content.split(" ")[1] == "pfp") {
+        if(message.author.avatar != undefined) {
+          message.channel.send(message.author.avatarURL({size:4096}));
+        } else {
+          message.channel.send("as far as i can tell you do not have a profile picture...");
+        }
+      }
+      // <banner> send the users banner image - NOT WORKING! 
+      else if(message.content.split(" ")[1] == "banner") {
+        if(message.author.banner != undefined) {
+          message.channel.send(message.author.bannerURL({size:4096}));
+        } else {
+          message.channel.send("i cannot find a banner image for you...");
+        }
+      }
+      // send command info
+      else if(message.content.split(" ")[1] == "help") {
+        message.channel.send(helptext);
+      }
+      // toggle the server sendlink status
+      else if(message.content.split(" ")[1] == "toggle") { // toggle server
+        toggleLinks(message.guild);
+        message.channel.send("ok! :3");
+      }
+      // toggle the users sendlink status
+      else if(message.content.split(" ")[1] == "toggleme") { // toggle user
+        toggleUserLinks(message.author.id, message.guild.id);
+        message.channel.send(`got it ${message.author.displayName}! ( ˘▽˘)っ♨`);
+      }
+    }
   }
 })
 
@@ -386,3 +385,37 @@ client.login(ts);
 
 // code written by steve - austin stotts
 // please dont fuck with the token
+
+
+
+let helptext = 
+`\`
+any x.com or twitter.com link will automatically be sent again as a vxtwitter.com link to allow for embeds
+use the following <sumi> commands to get server info / other usefull things:
+——————————————————————————————————
+__________________________________
+<sumi help> - will show this message
+——————————————————————————————————
+__________________________________
+<sumi serverbanner> - sends this server's banner in the largest resolution discord has as a .png
+<sumi serversplash> - sends this server's splash image in the largest resolution discord has as a .png
+——————————————————————————————————
+__________________________________
+<sumi pfp> - send the user's avatar in the largest size discord has available
+<sumi banner> - send the user's profile banner in the largest size discord has available
+——————————————————————————————————
+__________________________________
+<sumi stats> - send usage counts for sumi's primary functions
+<sumi mystats>* - show personal counts and settings (coming soon)
+——————————————————————————————————
+__________________________________
+<sumi toggle> - turn on/off link sending for entire server
+<sumi toggleme>* - turn on/off link sending for individual
+——————————————————————————————————
+__________________________________
+<hi/hello/wsg sumi> - to say hello
+<bye/goodbye/gn sumi> - to say goodbye
+——————————————————————————————————
+
+*server settings override any personal settings
+\``
