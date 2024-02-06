@@ -201,7 +201,7 @@ let getLinkStatus = (guild) => {
   })
 }
 
-let addUser = (userid, guildid) => {
+let addUser = (userid, guildid, username) => {
   ddb.get({
     TableName: "sumi", 
     Key: { "guildid": guildid }},
@@ -214,7 +214,16 @@ let addUser = (userid, guildid) => {
           // user is already in db
         } else {
           // user is new > add to db
-          data.Item.members[userid] = { sendLinks: false, }
+          data.Item.members[userid] = {
+            name: username,
+            sendLinks: false,
+            messages: 0,
+            hellos: 0,
+            goodbyes: 0,
+            helloToday: false,
+            goodbyeToday: false,
+            sumiscore: 0,
+          }
           ddb.put({
             TableName: "sumi",
             Item : data.Item
@@ -234,7 +243,7 @@ let addUser = (userid, guildid) => {
 let faces = ["0.0","<3",":3","(⁀ᗢ⁀)","\\(^ヮ^)/","(„• ᴗ •„)","	⸜(⸝⸝⸝´꒳`⸝⸝⸝)⸝","( = ⩊ = )","(♡˙︶˙♡)","♡＼(￣▽￣)／♡","(´꒳`)♡","	\(〇_ｏ)/","╮(︶▽︶)╭","(*°ｰ°)ﾉ","(⊃｡•́‿•̀｡)⊃","(っ ᵔ◡ᵔ)っ","(｡•̀ᴗ-)✧","	|ʘ‿ʘ)╯","☆ﾐ(o*･ω･)ﾉ","	(=^･ｪ･^=)","U・ᴥ・U","	૮₍ ˶• ༝ •˶ ₎ა","	(; ・_・)――――C","( ˘▽˘)っ♨","	-●●●-ｃ(・・ )","( ・・)つ-●●●","( o˘◡˘o) ┌iii┐","	(〜￣▽￣)〜","(~‾▽‾)~","✺◟( • ω • )◞✺","	( ͠° ͟ʖ ͡°)","( . •́ _ʖ •̀ .)","(⌐■_■)","ଘ(੭ˊᵕˋ)੭* ੈ✩‧₊˚","(ノ°∀°)ノ⌒･*:.｡. .｡.:*･゜ﾟ･*☆","	(/￣ー￣)/~~☆’.･.･:★’.･.･:☆"]
 let greeting = ["haii", "hi", "おはよう!", "おやすみ...", "こんにちは", "hey", "hello!", "greetings!", "Hola", "hi", "haaaaay", "hewwo", "HEY!", "hiiii", "boo!", "RAAAAHHH", "erm", "可愛い"];
 let leaving = ["bye", "see you!", "see you", "bye bye", "goodnight!", "goodnight", "gn", "gn!", "sweet dreams"];
-let adjs = ["great", "amazing", "cool", "poggers", "epic", "sick ass", "dang good", "good", "super", "super duper", "astonishing", "brilliant", "すごい", "lame ass", "borring", "silly"];
+let adjs = ["great", "amazing", "cool", "poggers", "epic", "sick ass", "dang good", "good", "super", "super duper", "astonishing", "brilliant", "すごい", "lame ass", "boring", "silly"];
 let emojis = ["💕","💓","💞","💖","💗","❤️","🌷","💐","💯","✔️"];
 
 let birthdays = [{name: "steve ♡(>ᴗ•)", month: 0, day: 28}, {name: "wisp ( o˘◡˘o) ┌iii┐", month: 0, day: 31}];
@@ -261,7 +270,7 @@ client.on("ready", () => {
 
 client.on("messageCreate", (message) => {
   updageIconID(message.guild);
-  addUser(message.author.id, message.guild.id);
+  addUser(message.author.id, message.guild.id, message.author.displayName);
   // console.log(message); // uncomment to print all messages
 
   if (message.content.startsWith("https://x.com") || message.content.startsWith("https://twitter.com")) {
@@ -277,7 +286,7 @@ client.on("messageCreate", (message) => {
             message.reply(`https://vxtwitter.com${data}`);
             addLink(message.channel.guild);
           } else {
-            console.log("links are turned off")
+            console.log("links are turned off");
           }
         }
     })
@@ -300,9 +309,11 @@ client.on("messageCreate", (message) => {
       addHaiku(message.channel.guild);
   } 
 
-  else if(message.mentions.repliedUser.id == "1176256487035785257" && message.content.toLowerCase() == "delete") {
-    message.channel.messages.delete(message.reference.messageId);
-    message.delete();
+  else if(message.mentions.repliedUser != undefined){
+    if(message.mentions.repliedUser.id == "1176256487035785257" && message.content.toLowerCase() == "delete") {
+      message.channel.messages.delete(message.reference.messageId);
+      message.delete();
+    }
   }
   // <sumi> commands
   else {
@@ -368,14 +379,37 @@ client.on("messageCreate", (message) => {
         message.channel.send(helptext);
       }
       // toggle the server sendlink status
-      else if(message.content.split(" ")[1] == "toggle") { // toggle server
+      else if(message.content.split(" ")[1] == "toggle") { 
         toggleLinks(message.guild);
         message.channel.send("ok! :3");
       }
       // toggle the users sendlink status
-      else if(message.content.split(" ")[1] == "toggleme") { // toggle user
+      else if(message.content.split(" ")[1] == "toggleme") {
         toggleUserLinks(message.author.id, message.guild.id);
         message.channel.send(`got it ${message.author.displayName}! ( ˘▽˘)っ♨`);
+      }
+      // send list of members and score
+      else if(message.content.split(" ")[1] == "members") {
+        ddb.get({TableName: "sumi", Key: { 'guildid': message.guildId }}, (error, stats) => {
+          if(error) {
+            console.log(error);
+          } else {
+            let data = stats.Item.members;
+            let memberslist = [];
+            Object.keys(data).forEach((key, i) => { memberslist.push(`${i+1}: ${data[key].name}`) })
+            // console.log(stats.Item.members)
+            // console.log(...memberslist)
+            let membersEmbed = new EmbedBuilder()
+            .setColor(0xF78DA7)
+            .setTitle(`${stats.Item.guildname}`)
+            .setThumbnail(`https://cdn.discordapp.com/icons/${stats.Item.guildid}/${stats.Item.guildicon}.png`)
+            .setDescription(memberslist.join('\n'))
+            .setTimestamp()
+            .setFooter({ text: 'with 💖 from sumi' });
+
+            message.channel.send({embeds: [membersEmbed]});
+          }
+        })
       }
     }
   }
