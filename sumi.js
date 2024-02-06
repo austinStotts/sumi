@@ -410,7 +410,30 @@ client.on("messageCreate", (message) => {
             message.channel.send({embeds: [membersEmbed]});
           }
         })
-      } else if (message.content.split(" ")[1] == "mydata" || message.content.split(" ")[1] == "md") {
+      }
+
+      else if (message.content.split(" ")[1] == "serverdata" || message.content.split(" ")[1] == "sd") {
+        let data = [];
+        Object.keys(message.guild).forEach(key => {
+          if(typeof message.guild[key] == "object") {
+            if(message.guild[key] != undefined) {
+              // console.log(message.guild[key])
+              data.push(`${key}: [LOOP]`);
+            } else {
+              data.push(`${key}: ${message.guild[key]}`);
+            }
+          } else {
+            data.push(`${key}: ${message.guild[key]}`)
+          }
+        })
+        message.channel.send(`
+        \`\`\`
+        \n${data.join("\n")}
+        \`\`\`
+        `)
+      } 
+      
+      else if (message.content.split(" ")[1] == "mydata" || message.content.split(" ")[1] == "md") {
         let data = [];
         Object.keys(message.author).forEach(key => { data.push(`${key}: ${message.author[key]}`) })
         message.channel.send(`
@@ -443,6 +466,7 @@ __________________________________
 __________________________________
 <sumi serverbanner || sb> - sends this server's banner in the largest resolution discord has as a .png
 <sumi serversplash || ss> - sends this server's splash image in the largest resolution discord has as a .png
+<sumi serverdata || sd> - show guild data from discord
 ——————————————————————————————————
 __________________________________
 <sumi pfp> - send the user's avatar in the largest size discord has available
