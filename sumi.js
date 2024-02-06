@@ -319,7 +319,7 @@ client.on("messageCreate", (message) => {
   else {
     if(message.content.toLowerCase().startsWith("sumi")) {
       // <stats> show server stats
-      if(message.content.split(" ")[1] == "stats") {
+      if(message.content.split(" ")[1] == "stats" || message.content.split(" ")[1] == "st") {
         ddb.get({TableName: "sumi", Key: { 'guildid': message.guildId }}, (error, stats) => {
           if(error) {
             console.log(error);
@@ -343,7 +343,7 @@ client.on("messageCreate", (message) => {
         })
       }
       // <serverbanner> send the server's banner image
-      else if(message.content.split(" ")[1] == "serverbanner") {
+      else if(message.content.split(" ")[1] == "serverbanner" || message.content.split(" ")[1] == "sb") {
         if(message.guild.banner == null) {
           message.channel.send("sorry, this server does not have a banner :(");
         } else {
@@ -351,7 +351,7 @@ client.on("messageCreate", (message) => {
         }
       } 
       // <serversplash> send the server's splash image
-      else if(message.content.split(" ")[1] == "serversplash") {
+      else if(message.content.split(" ")[1] == "serversplash" || message.content.split(" ")[1] == "ss") {
         if(message.guild.splash == null) {
           message.channel.send("sorry, this server does not have a splash image :(");
         } else {
@@ -367,7 +367,7 @@ client.on("messageCreate", (message) => {
         }
       }
       // <banner> send the users banner image - NOT WORKING! 
-      else if(message.content.split(" ")[1] == "banner") {
+      else if(message.content.split(" ")[1] == "banner" || message.content.split(" ")[1] == "bn") {
         if(message.author.banner != undefined) {
           message.channel.send(message.author.bannerURL({size:4096}));
         } else {
@@ -379,17 +379,17 @@ client.on("messageCreate", (message) => {
         message.channel.send(helptext);
       }
       // toggle the server sendlink status
-      else if(message.content.split(" ")[1] == "toggle") { 
+      else if(message.content.split(" ")[1] == "toggle" || message.content.split(" ")[1] == "tg") { 
         toggleLinks(message.guild);
         message.channel.send("ok! :3");
       }
       // toggle the users sendlink status
-      else if(message.content.split(" ")[1] == "toggleme") {
+      else if(message.content.split(" ")[1] == "toggleme" || message.content.split(" ")[1] == "tm") {
         toggleUserLinks(message.author.id, message.guild.id);
         message.channel.send(`got it ${message.author.displayName}! ( ˘▽˘)っ♨`);
       }
       // send list of members and score
-      else if(message.content.split(" ")[1] == "members") {
+      else if(message.content.split(" ")[1] == "members" || message.content.split(" ")[1] == "mb") {
         ddb.get({TableName: "sumi", Key: { 'guildid': message.guildId }}, (error, stats) => {
           if(error) {
             console.log(error);
@@ -410,6 +410,14 @@ client.on("messageCreate", (message) => {
             message.channel.send({embeds: [membersEmbed]});
           }
         })
+      } else if (message.content.split(" ")[1] == "mydata" || message.content.split(" ")[1] == "md") {
+        let data = [];
+        Object.keys(message.author).forEach(key => { data.push(`${key}: ${message.author[key]}`) })
+        message.channel.send(`
+        \`\`\`
+        \n${data.join("\n")}
+        \`\`\`
+        `)
       }
     }
   }
@@ -423,7 +431,9 @@ client.login(ts);
 
 
 let helptext = 
-`\`
+`
+\`\`\`
+
 any x.com or twitter.com link will automatically be sent again as a vxtwitter.com link to allow for embeds
 use the following <sumi> commands to get server info / other usefull things:
 ——————————————————————————————————
@@ -431,20 +441,22 @@ __________________________________
 <sumi help> - will show this message
 ——————————————————————————————————
 __________________________________
-<sumi serverbanner> - sends this server's banner in the largest resolution discord has as a .png
-<sumi serversplash> - sends this server's splash image in the largest resolution discord has as a .png
+<sumi serverbanner || sb> - sends this server's banner in the largest resolution discord has as a .png
+<sumi serversplash || ss> - sends this server's splash image in the largest resolution discord has as a .png
 ——————————————————————————————————
 __________________________________
 <sumi pfp> - send the user's avatar in the largest size discord has available
-<sumi banner> - send the user's profile banner in the largest size discord has available
+<sumi banner || bn> - send the user's profile banner in the largest size discord has available
+<sumi mydata || md> - show user data from discord
 ——————————————————————————————————
 __________________________________
-<sumi stats> - send usage counts for sumi's primary functions
-<sumi mystats>* - show personal counts and settings (coming soon)
+<sumi stats || st> - send usage counts for sumi's primary functions
+<sumi mystats || ms>* - show personal counts and settings (coming soon)
+<sumi members || mb> - list all members sumi keeps track of (buggy)
 ——————————————————————————————————
 __________________________________
-<sumi toggle> - turn on/off link sending for entire server
-<sumi toggleme>* - turn on/off link sending for individual
+<sumi toggle || tg> - turn on/off link sending for entire server
+<sumi toggleme || tm>* - turn on/off link sending for individual
 ——————————————————————————————————
 __________________________________
 <hi/hello/wsg sumi> - to say hello
@@ -452,4 +464,5 @@ __________________________________
 ——————————————————————————————————
 
 *server settings override any personal settings
-\``
+\`\`\`
+`
