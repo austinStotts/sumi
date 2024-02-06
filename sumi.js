@@ -54,7 +54,7 @@ let addHello = (guild) => {
             Item: data.Item
             }, (error, response) => {
             if(error) { console.log(error) }
-            else { console.log(response, "RESPONSE") }
+            else { console.log(response) }
             })
         }
       }
@@ -77,7 +77,7 @@ let addGoodbye = (guild) => {
             Item: data.Item
             }, (error, response) => {
             if(error) { console.log(error) }
-            else { console.log(response, "RESPONSE") }
+            else { console.log(response) }
             })
         }
       }
@@ -100,7 +100,7 @@ let addLink = (guild) => {
             Item: data.Item
             }, (error, response) => {
             if(error) { console.log(error) }
-            else { console.log(response, "RESPONSE") }
+            else { console.log(response) }
             })
         }
       }
@@ -123,7 +123,7 @@ let addHaiku = (guild) => {
             Item: data.Item
             }, (error, response) => {
             if(error) { console.log(error) }
-            else { console.log(response, "RESPONSE") }
+            else { console.log(response) }
             })
         }
       }
@@ -144,7 +144,7 @@ let updageIconID = (guild) => {
             Item: data.Item
           }, (error, response) => {
             if(error) { console.log(error) }
-            else { console.log(response, "RESPONSE") }
+            else { console.log(response) }
           })
         }
       }
@@ -164,7 +164,7 @@ let toggleLinks = (guild) => {
           Item: data.Item
         }, (error, response) => {
           if(error) { console.log(error) }
-          else { console.log(response, "RESPONSE") }
+          else { console.log(response) }
         })
       }
   })
@@ -183,7 +183,7 @@ let toggleUserLinks = (userid, guildid) => {
           Item: data.Item
         }, (error, response) => {
           if(error) { console.log(error) }
-          else { console.log(response, "RESPONSE") }
+          else { console.log(response) }
         })
       }
   })
@@ -273,8 +273,8 @@ client.on("messageCreate", (message) => {
           else {
             if(data.Item.isSendingLinks && data.Item.members[message.author.id].sendLinks) {
               let data = message.content.split(".com")[1];
-              message.delete();
-              message.channel.send(`${message.author.toString()}: https://vxtwitter.com${data}`);
+              message.suppressEmbeds();
+              message.reply(`https://vxtwitter.com${data}`);
               addLink(message.channel.guild);
             } else {
               console.log("links are turned off")
