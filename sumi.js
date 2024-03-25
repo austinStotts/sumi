@@ -503,7 +503,7 @@ __________________________________
 __________________________________
 <sumi serverbanner || sb> - sends this server's banner in the largest resolution discord has as a .png
 <sumi serversplash || ss> - sends this server's splash image in the largest resolution discord has as a .png
-<sumi serverdata || sd> - show guild data from discord
+🔒 <sumi serverdata || sd> - show guild data from discord
 ——————————————————————————————————
 __________________________________
 <sumi pfp> - send the user's avatar in the largest size discord has available
@@ -516,7 +516,7 @@ __________________________________
 <sumi members || mb> - list all members sumi keeps track of (buggy)
 ——————————————————————————————————
 __________________________________
-<sumi toggle || tg> - turn on/off link sending for entire server
+🔒 <sumi toggle || tg> - turn on/off link sending for entire server
 <sumi toggleme || tm>* - turn on/off link sending for individual
 ——————————————————————————————————
 __________________________________
