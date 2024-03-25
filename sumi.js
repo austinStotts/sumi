@@ -247,6 +247,7 @@ let adjs = ["great", "amazing", "cool", "poggers", "epic", "sick ass", "dang goo
 let emojis = ["💕","💓","💞","💖","💗","❤️","🌷","💐","💯","✔️"];
 
 let birthdays = [{name: "steve ♡(>ᴗ•)", month: 0, day: 28}, {name: "wisp ( o˘◡˘o) ┌iii┐", month: 0, day: 31}];
+let holidays = [{name: "usa #1 🦅", month: 6, day: 4}, {name: "memorializing", month: 4, day: 29}, {name: "no work day!", month: 8, day: 2}, {name: "911", month: 8, day: 11}]
 
 client.on("ready", () => {
     console.log("sumi ready!");
@@ -256,13 +257,20 @@ client.on("ready", () => {
       let month = date.getMonth(); //0
       let day = date.getDate(); //1
       let isBirthday = false;
+      let isHoliday = false;
       for(let i = 0; i < birthdays.length; i++) {
         if(month == birthdays[i].month && day == birthdays[i].day) {
           client.user.setActivity(`hbd ${birthdays[i].name}`);
           isBirthday = true;
         }
       }
-      if(!isBirthday) { client.user.setActivity("૮₍ ˶• ༝ •˶ ₎ა") }
+      for(let i = 0; i < holidays.length; i++) {
+        if(month == holidays[i].month && day == holidays[i].day) {
+          client.user.setActivity(`${holidays[i].name}`);
+          isHoliday = true;
+        }
+      }
+      if(!isBirthday && !isHoliday) { client.user.setActivity("૮₍ ˶• ༝ •˶ ₎ა") }
     }, 10000)
 })
 
@@ -302,6 +310,7 @@ client.on("messageCreate", (message) => {
             let data = message.content.split(".com")[1];
             message.suppressEmbeds();
             message.reply(`https://vxtiktok.com${data}`);
+            message.channel.send("tiktok is still a work in progress...");
             addLink(message.channel.guild);
           } else {
             console.log("links are turned off");
