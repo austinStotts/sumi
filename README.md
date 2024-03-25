@@ -14,7 +14,7 @@ you can toggle sumi on/off on a server wide or per user basis
 by default the server is set to on  
 and each user is set to off  
 
-use [sumi toggle] to turn links on/off for the whole server - 🔒 must have managechannels permission
+use [sumi toggle] to turn links on/off for the whole server - 🔒 must have managechannels permission  
 use [sumi toggleme] to turn links on/off per user
 
 ## invite
