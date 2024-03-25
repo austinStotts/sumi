@@ -291,7 +291,7 @@ client.on("messageCreate", (message) => {
         }
     })
   }
-  else if (message.content.startsWith("https://tiktok.com")) {
+  else if (message.content.startsWith("https://tiktok.com") || message.content.startsWith("https://www.tiktok.com")) {
     ddb.get({
       TableName: "sumi", 
       Key: { "guildid": message.guild.id }},
