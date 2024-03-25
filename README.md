@@ -1,5 +1,6 @@
 # sumi
-https://cdn.discordapp.com/app-icons/1176256487035785257/2388efbbb8e173f71c2f8c33da8faff6.png?size=256&quot
+![image](https://github.com/austinStotts/sumi/assets/33228131/97446efb-88d6-490c-8fbf-0cf911307d89)
+
 
 ## discord bot to make embeding links better.
 sumi waitches for twitter.com and x.com links and sends a vxtwitter.com link  
