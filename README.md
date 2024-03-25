@@ -5,6 +5,8 @@
 ## discord bot to make embeding links better.
 sumi waitches for twitter.com and x.com links and sends a vxtwitter.com link  
 allows for photo collections and videos to be seen without leaving discord  
+  
+also kinda works for tiktok...
 
 ## invite
 https://discord.com/oauth2/authorize?client_id=1176256487035785257
