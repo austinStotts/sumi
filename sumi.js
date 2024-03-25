@@ -407,8 +407,12 @@ client.on("messageCreate", (message) => {
       }
       // toggle the server sendlink status
       else if(message.content.split(" ")[1] == "toggle" || message.content.split(" ")[1] == "tg") { 
-        toggleLinks(message.guild);
-        message.channel.send("ok! :3");
+        if(message.member.permissions.has("ManageChannels")) {
+          toggleLinks(message.guild);
+          message.channel.send("ok! :3");
+        } else {
+          message.channel.send("🚫 permission denied 🚫");
+        }
       }
       // toggle the users sendlink status
       else if(message.content.split(" ")[1] == "toggleme" || message.content.split(" ")[1] == "tm") {
@@ -440,24 +444,30 @@ client.on("messageCreate", (message) => {
       }
 
       else if (message.content.split(" ")[1] == "serverdata" || message.content.split(" ")[1] == "sd") {
-        let data = [];
-        Object.keys(message.guild).forEach(key => {
-          if(typeof message.guild[key] == "object") {
-            if(message.guild[key] != undefined) {
-              // console.log(message.guild[key])
-              data.push(`${key}: [LOOP]`);
+        if(message.member.permissions.has("ManageChannels")) {
+          let data = [];
+          Object.keys(message.guild).forEach(key => {
+            if(typeof message.guild[key] == "object") {
+              if(message.guild[key] != undefined) {
+                // console.log(message.guild[key])
+                data.push(`${key}: [LOOP]`);
+              } else {
+                data.push(`${key}: ${message.guild[key]}`);
+              }
             } else {
-              data.push(`${key}: ${message.guild[key]}`);
+              data.push(`${key}: ${message.guild[key]}`)
             }
-          } else {
-            data.push(`${key}: ${message.guild[key]}`)
-          }
-        })
-        message.channel.send(`
-        \`\`\`
-        \n${data.join("\n")}
-        \`\`\`
-        `)
+          })
+          message.channel.send(`
+          \`\`\`
+          \n${data.join("\n")}
+          \`\`\`
+          `)
+          toggleLinks(message.guild);
+          message.channel.send("ok! :3");
+        } else {
+          message.channel.send("🚫 permission denied 🚫");
+        }
       } 
       
       else if (message.content.split(" ")[1] == "mydata" || message.content.split(" ")[1] == "md") {
