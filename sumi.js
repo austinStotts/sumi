@@ -430,7 +430,7 @@ client.on("messageCreate", (message) => {
         }
       }
       // send language codes
-      else if(message.content.split(" ")[1] == "language codes") {
+      else if(message.content.split(" ")[1] == "languages") {
         message.channel.send(languages);
       }
       // send command info
