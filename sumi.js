@@ -243,7 +243,7 @@ let addUser = (userid, guildid, username) => {
 let faces = ["0.0","<3",":3","(⁀ᗢ⁀)","\\(^ヮ^)/","(„• ᴗ •„)","	⸜(⸝⸝⸝´꒳`⸝⸝⸝)⸝","( = ⩊ = )","(♡˙︶˙♡)","♡＼(￣▽￣)／♡","(´꒳`)♡","	\(〇_ｏ)/","╮(︶▽︶)╭","(*°ｰ°)ﾉ","(⊃｡•́‿•̀｡)⊃","(っ ᵔ◡ᵔ)っ","(｡•̀ᴗ-)✧","	|ʘ‿ʘ)╯","☆ﾐ(o*･ω･)ﾉ","	(=^･ｪ･^=)","U・ᴥ・U","	૮₍ ˶• ༝ •˶ ₎ა","	(; ・_・)――――C","( ˘▽˘)っ♨","	-●●●-ｃ(・・ )","( ・・)つ-●●●","( o˘◡˘o) ┌iii┐","	(〜￣▽￣)〜","(~‾▽‾)~","✺◟( • ω • )◞✺","	( ͠° ͟ʖ ͡°)","( . •́ _ʖ •̀ .)","(⌐■_■)","ଘ(੭ˊᵕˋ)੭* ੈ✩‧₊˚","(ノ°∀°)ノ⌒･*:.｡. .｡.:*･゜ﾟ･*☆","	(/￣ー￣)/~~☆’.･.･:★’.･.･:☆"]
 let greeting = ["haii", "hi", "おはよう!", "おやすみ...", "こんにちは", "hey", "hello!", "greetings!", "Hola", "hi", "haaaaay", "hewwo", "HEY!", "hiiii", "boo!", "RAAAAHHH", "erm", "可愛い"];
 let leaving = ["bye", "see you!", "see you", "bye bye", "goodnight!", "goodnight", "gn", "gn!", "sweet dreams"];
-let adjs = ["great", "amazing", "cool", "poggers", "epic", "sick ass", "dang good", "good", "super", "super duper", "astonishing", "brilliant", "すごい", "lame ass", "boring", "silly", "overrated", "embarrassing", "horny", "explosive", "prime time", "whimsical", "putrid", "complicated", "mouthwatering", "vivid"];
+let adjs = ["great", "amazing", "cool", "poggers", "epic", "sick ass", "dang good", "good", "super", "super duper", "astonishing", "brilliant", "すごい", "lame ass", "boring", "silly", "overrated", "embarrassing", "horny", "explosive", "prime time", "whimsical", "putrid", "complicated", "mouthwatering", "vivid", "sickening", "is that even a"];
 let emojis = ["💕","💓","💞","💖","💗","❤️","🌷","💐","💯","✔️"];
 
 let birthdays = [{name: "steve ♡(>ᴗ•)", month: 0, day: 28}, {name: "wisp ( o˘◡˘o) ┌iii┐", month: 0, day: 31}];
@@ -340,6 +340,30 @@ client.on("messageCreate", (message) => {
     if(message.mentions.repliedUser.id == "1176256487035785257" && message.content.toLowerCase() == "delete") {
       message.channel.messages.delete(message.reference.messageId);
       message.delete();
+    }
+    else if (message.content.toLowerCase().split(" ")[0] == "sumi" && message.content.toLowerCase().split(" ")[1] == "translate") {
+      console.log("translating message!");
+      let from_lang = 'auto';
+      let to_lang = message.content.toLowerCase().split(" ")[2];
+      let text_to_translate = message.content;
+      
+      const translate = new AWS.Translate();
+
+      const params = {
+        SourceLanguageCode: from_lang,
+        TargetLanguageCode: to_lang,
+        Text: text_to_translate,
+      };
+
+      translate.translateText(params, (err, data) => {
+        if (err) {
+          console.log("Error translating text:", err);
+          message.channel.send("erm that did not work... maybe YOU did something wrong!");
+        } else {
+          console.log("Translated text:", data.TranslatedText);
+          message.channel.send(data.TranslatedText);
+        }
+      });
     }
   }
   // <sumi> commands
