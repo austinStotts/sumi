@@ -343,27 +343,31 @@ client.on("messageCreate", (message) => {
     }
     else if (message.content.toLowerCase().split(" ")[0] == "sumi" && message.content.toLowerCase().split(" ")[1] == "translate") {
       console.log("translating message!");
-      let from_lang = 'auto';
-      let to_lang = message.content.toLowerCase().split(" ")[2];
-      let text_to_translate = message.channel.messages.fetch(message.reference.messageId).content;
-      
-      const translate = new AWS.Translate();
+      message.fetchReference()
+      .then(data => {
+        let from_lang = 'auto';
+        let to_lang = message.content.toLowerCase().split(" ")[2];
+        let text_to_translate = data.content;
 
-      const params = {
-        SourceLanguageCode: from_lang,
-        TargetLanguageCode: to_lang,
-        Text: text_to_translate,
-      };
+        const translate = new AWS.Translate();
 
-      translate.translateText(params, (err, data) => {
-        if (err) {
-          console.log("Error translating text:", err);
-          message.channel.send("erm that did not work... maybe YOU did something wrong!");
-        } else {
-          console.log("Translated text:", data.TranslatedText);
-          message.channel.send(data.TranslatedText);
-        }
-      });
+        const params = {
+          SourceLanguageCode: from_lang,
+          TargetLanguageCode: to_lang,
+          Text: text_to_translate,
+        };
+  
+        translate.translateText(params, (err, data) => {
+          if (err) {
+            console.log("Error translating text:", err);
+            message.channel.send("erm that did not work... maybe YOU did something wrong!");
+          } else {
+            console.log("Translated text:", data.TranslatedText);
+            message.channel.send(data.TranslatedText);
+          }
+        });
+      })
+      .catch(err => {console.log("failure to fetch replied message")})
     }
   }
   // <sumi> commands
