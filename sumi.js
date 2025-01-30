@@ -345,7 +345,7 @@ client.on("messageCreate", (message) => {
       console.log("translating message!");
       let from_lang = 'auto';
       let to_lang = message.content.toLowerCase().split(" ")[2];
-      let text_to_translate = message.content;
+      let text_to_translate = message.channel.messages.fetch(message.reference.messageId).content;
       
       const translate = new AWS.Translate();
 
@@ -424,6 +424,10 @@ client.on("messageCreate", (message) => {
         } else {
           message.channel.send("i cannot find a banner image for you...");
         }
+      }
+      // send language codes
+      else if(message.content.split(" ")[1] == "language codes") {
+        message.channel.send(languages);
       }
       // send command info
       else if(message.content.split(" ")[1] == "help") {
@@ -547,7 +551,93 @@ __________________________________
 <hi/hello/wsg sumi> - to say hello
 <bye/goodbye/gn sumi> - to say goodbye
 ——————————————————————————————————
+__________________________________
+<sumi translate [country code]> *in a reply* - to translate a message
+<sumi language codes> - to list all available language codes
+——————————————————————————————————
+__________________________________
+<delete> *in a reply* - to delete sumi's message / sumi can only delete her own messages
+——————————————————————————————————
+
 
 *server settings override any personal settings
 \`\`\`
+`
+
+const languages = `
+Afrikaans:         	af
+Albanian:	          sq
+Amharic:	          am
+Arabic:	            ar
+Armenian:	          hy
+Azerbaijani:	      az
+Bengali:	          bn
+Bosnian:	          bs
+Bulgarian:	        bg
+Catalan:	          ca
+Chinese (Simp):	    zh
+Chinese (Trad):	    zh-TW
+Croatian:	          hr
+Czech:	            cs
+Danish:	            da
+Dari:	              fa-AF
+Dutch:	            nl
+English:	          en
+Estonian:	          et
+Farsi (Persian):	  fa
+Filipino, Tagalog:	tl
+Finnish:	          fi
+French:	            fr
+French (Canada):	  fr-CA
+Georgian:	          ka
+German:	            de
+Greek:	            el
+Gujarati:	          gu
+Haitian Creole:	    ht
+Hausa:	            ha
+Hebrew:	            he
+Hindi:	            hi
+Hungarian:	        hu
+Icelandic:	        is
+Indonesian:	        id
+Irish:	            ga
+Italian:	          it
+Japanese:	          ja
+Kannada:	          kn
+Kazakh:	            kk
+Korean:	            ko
+Latvian:	          lv
+Lithuanian:	        lt
+Macedonian:	        mk
+Malay:	            ms
+Malayalam:	        ml
+Maltese:	          mt
+Marathi:	          mr
+Mongolian:	        mn
+Norwegian (Bokmål):	no
+Pashto:	            ps
+Polish:	            pl
+Portuguese (Braz):	pt
+Portuguese (Port):	pt-PT
+Punjabi:	          pa
+Romanian:	          ro
+Russian:	          ru
+Serbian:	          sr
+Sinhala:	          si
+Slovak:	            sk
+Slovenian:	        sl
+Somali:	            so
+Spanish:	          es
+Spanish (Mexico):	  es-MX
+Swahili:	          sw
+Swedish:	          sv
+Tamil:	            ta
+Telugu:	            te
+Thai:	              th
+Turkish:	          tr
+Ukrainian:	        uk
+Urdu:	              ur
+Uzbek:	            uz
+Vietnamese:	        vi
+Welsh:	            cy
 `
