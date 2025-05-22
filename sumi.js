@@ -397,6 +397,9 @@ client.on("messageCreate", (message) => {
           }
         })
       }
+      else if(message.content.split(" ")[1] == "create") {
+        makeGuild(message.guild)
+      }
       // <serverbanner> send the server's banner image
       else if(message.content.split(" ")[1] == "serverbanner" || message.content.split(" ")[1] == "sb") {
         if(message.guild.banner == null) {
