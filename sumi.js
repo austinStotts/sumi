@@ -18,24 +18,49 @@ AWS.config.update({
 
 let ddb = new AWS.DynamoDB.DocumentClient();
 
-let makeGuild = (guild) => {
-    ddb.put({
-        TableName: "sumi",
-        Item: {
-            "guildid": guild.id,
-            "guildicon": guild.icon,
-            "guildname": guild.name,
-            "numberOfHellos": 0,
-            "numberOfGoodbyes": 0,
-            "numberOfHaikus": 0,
-            "numberOfLinks": 0,
-            "isSendingLinks": true,
-            "members": {}
-        }
-    }, (error, response) => {
-        if(error) { console.log(error) }
-        else { console.log("make new guild") }
-    })
+
+
+let makeGuild = (guild, message) => {
+  ddb.get({
+    TableName: "sumi",
+    Key: { "guildid": guild.id }},
+  (error, data) => {
+    if (error) {
+      console.log(error)
+      message.channel.send("something really really bad happened sorry...");
+    } else {
+      if(data.Item == undefined) {
+        // no guild found
+        ddb.put({
+          TableName: "sumi",
+          Item: {
+              "guildid": guild.id,
+              "guildicon": guild.icon,
+              "guildname": guild.name,
+              "numberOfHellos": 0,
+              "numberOfGoodbyes": 0,
+              "numberOfHaikus": 0,
+              "numberOfLinks": 0,
+              "isSendingLinks": true,
+              "members": {}
+          }
+        }, (error, response) => {
+            if(error) {
+              console.log(error)
+              message.channel.send("something really super bad happened... sorry...");
+            }
+            else {
+              console.log("made new guild")
+              message.channel.send("consider it done!");
+            }
+        })
+        
+      } else {
+        // guild was found
+        message.channel.send("cannot create what has already been created!");
+      }
+    }
+  })
 }
 
 let addHello = (guild) => {
@@ -318,6 +343,11 @@ client.on("messageCreate", (message) => {
         }
     })
   }
+  // thank you sumi
+  else if(message.content.toLowerCase().startsWith("thank you sumi") || message.content.toLowerCase().startsWith("ty sumi")) {
+    message.react(`${emojis[Math.floor(Math.random()*emojis.length)]}`);
+    message.reply(`my pleasure`);
+  }
   // hey sumi
   else if(message.content.toLowerCase().startsWith("hey sumi") || message.content.toLowerCase().startsWith("hello sumi") || message.content.toLowerCase().startsWith("hi sumi") || message.content.toLowerCase().startsWith("wsg sumi") || message.content.toLowerCase().startsWith("gm sumi")) {
       message.react(`${emojis[Math.floor(Math.random()*emojis.length)]}`);
@@ -398,7 +428,7 @@ client.on("messageCreate", (message) => {
         })
       }
       else if(message.content.split(" ")[1] == "create") {
-        makeGuild(message.guild)
+        makeGuild(message.guild, message);
       }
       // <serverbanner> send the server's banner image
       else if(message.content.split(" ")[1] == "serverbanner" || message.content.split(" ")[1] == "sb") {
