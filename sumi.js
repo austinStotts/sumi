@@ -214,9 +214,7 @@ let addLink = (message) => {
   })
 }
 
-let addHaiku = (message) => {
-  let user = message.embeds[0].data.footer.text.split(" ")[1]
-  console.log(user);
+let addHaiku = (message, authorid, valid) => {
   let guild = message.channel.guild;
   ddb.get({
     TableName: "sumi", 
@@ -235,32 +233,34 @@ let addHaiku = (message) => {
               if(error) { console.log(error) }
               else { console.log(response) }
             })
-            if(data.Item.members[message.author.id].haikus != undefined) {
-              // does have haiku property -> add 1
-              data.Item.members[message.author.id].haikus += 1;
-              ddb.put({
-                TableName: "sumi",
-                Item : data.Item
-              }, (error, data) => {
-                if(error) {
-                  console.log(error);
-                } else {
-                  // user was updated
-                }
-              })
-            } else {
-              // does not have the haiku property
-              data.Item.members[message.author.id].haikus = 1;
-              ddb.put({
-                TableName: "sumi",
-                Item : data.Item
-              }, (error, data) => {
-                if(error) {
-                  console.log(error);
-                } else {
-                  // user was updated
-                }
-              })
+            if(valid) {
+              if(data.Item.members[authorid].haikus != undefined) {
+                // does have haiku property -> add 1
+                data.Item.members[authorid].haikus += 1;
+                ddb.put({
+                  TableName: "sumi",
+                  Item : data.Item
+                }, (error, data) => {
+                  if(error) {
+                    console.log(error);
+                  } else {
+                    // user was updated
+                  }
+                })
+              } else {
+                // does not have the haiku property
+                data.Item.members[authorid].haikus = 1;
+                ddb.put({
+                  TableName: "sumi",
+                  Item : data.Item
+                }, (error, data) => {
+                  if(error) {
+                    console.log(error);
+                  } else {
+                    // user was updated
+                  }
+                })
+              }
             }
         }
       }
@@ -477,7 +477,20 @@ client.on("messageCreate", (message) => {
   // reply to haikubot
   else if(message.author.username == "HaikuBot" && message.author.bot && message.embeds.length > 0) {
       setTimeout(() => { message.channel.send(`${adjs[Math.floor(Math.random()*adjs.length)]} haiku`); }, 500);
-      addHaiku(message);
+      message.channel.messages.fetch({ limit: 2 })
+      .then(messages => {
+        // console.log(message.embeds[0])
+        console.log(messages.last().member.nickname)
+        console.log(message.embeds[0].data.footer.text.split(" ")[1])
+        if(messages.last().member.nickname == message.embeds[0].data.footer.text.split(" ")[1]) {
+          console.log("TRUE")
+          addHaiku(message, messages.last().author.id, true)
+        } else {
+          addHaiku(message, "-1", false)
+        }
+      })
+      .catch(error => { console.log(error) })
+      
   } 
 
   else if(message.mentions.repliedUser != undefined){
