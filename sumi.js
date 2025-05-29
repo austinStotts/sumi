@@ -18,27 +18,53 @@ AWS.config.update({
 
 let ddb = new AWS.DynamoDB.DocumentClient();
 
-let makeGuild = (guild) => {
-    ddb.put({
-        TableName: "sumi",
-        Item: {
-            "guildid": guild.id,
-            "guildicon": guild.icon,
-            "guildname": guild.name,
-            "numberOfHellos": 0,
-            "numberOfGoodbyes": 0,
-            "numberOfHaikus": 0,
-            "numberOfLinks": 0,
-            "isSendingLinks": true,
-            "members": {}
-        }
-    }, (error, response) => {
-        if(error) { console.log(error) }
-        else { console.log("make new guild") }
-    })
+
+
+let makeGuild = (guild, message) => {
+  ddb.get({
+    TableName: "sumi",
+    Key: { "guildid": guild.id }},
+  (error, data) => {
+    if (error) {
+      console.log(error)
+      message.channel.send("something really really bad happened sorry...");
+    } else {
+      if(data.Item == undefined) {
+        // no guild found
+        ddb.put({
+          TableName: "sumi",
+          Item: {
+              "guildid": guild.id,
+              "guildicon": guild.icon,
+              "guildname": guild.name,
+              "numberOfHellos": 0,
+              "numberOfGoodbyes": 0,
+              "numberOfHaikus": 0,
+              "numberOfLinks": 0,
+              "isSendingLinks": true,
+              "members": {}
+          }
+        }, (error, response) => {
+            if(error) {
+              console.log(error)
+              message.channel.send("something really super bad happened... sorry...");
+            }
+            else {
+              console.log("made new guild")
+              message.channel.send("consider it done!");
+            }
+        })
+        
+      } else {
+        // guild was found
+        message.channel.send("cannot create what has already been created!");
+      }
+    }
+  })
 }
 
-let addHello = (guild) => {
+let addHello = (message) => {
+  let guild = message.channel.guild;
   ddb.get({
     TableName: "sumi", 
     Key: { "guildid": guild.id }},
@@ -53,15 +79,41 @@ let addHello = (guild) => {
             TableName: "sumi",
             Item: data.Item
             }, (error, response) => {
-            if(error) { console.log(error) }
-            else { console.log(response) }
+              if(error) { console.log(error) }
+              else { console.log(response) }
             })
+            if(data.Item.members[message.author.id].hellos != undefined) {
+              data.Item.members[message.author.id].hellos += 1;
+              ddb.put({
+                TableName: "sumi",
+                Item : data.Item
+              }, (error, data) => {
+                if(error) {
+                  console.log(error);
+                } else {
+                  // user was updated
+                }
+              })
+            } else {
+              data.Item.members[message.author.id].hellos = 1;
+              ddb.put({
+                TableName: "sumi",
+                Item : data.Item
+              }, (error, data) => {
+                if(error) {
+                  console.log(error);
+                } else {
+                  // user was updated
+                }
+              })
+            }
         }
       }
   })
 }
 
-let addGoodbye = (guild) => {
+let addGoodbye = (message) => {
+  let guild = message.channel.guild;
   ddb.get({
     TableName: "sumi", 
     Key: { "guildid": guild.id }},
@@ -76,15 +128,43 @@ let addGoodbye = (guild) => {
             TableName: "sumi",
             Item: data.Item
             }, (error, response) => {
-            if(error) { console.log(error) }
-            else { console.log(response) }
+              if(error) { console.log(error) }
+              else { console.log(response) }
             })
+            if(data.Item.members[message.author.id].goodbyes != undefined) {
+              // does have haiku property -> add 1
+              data.Item.members[message.author.id].goodbyes += 1;
+              ddb.put({
+                TableName: "sumi",
+                Item : data.Item
+              }, (error, data) => {
+                if(error) {
+                  console.log(error);
+                } else {
+                  // user was updated
+                }
+              })
+            } else {
+              // does not have the haiku property
+              data.Item.members[message.author.id].goodbyes = 1;
+              ddb.put({
+                TableName: "sumi",
+                Item : data.Item
+              }, (error, data) => {
+                if(error) {
+                  console.log(error);
+                } else {
+                  // user was updated
+                }
+              })
+            }
         }
       }
   })
 }
 
-let addLink = (guild) => {
+let addLink = (message) => {
+  let guild = message.channel.guild;
   ddb.get({
     TableName: "sumi", 
     Key: { "guildid": guild.id }},
@@ -99,15 +179,43 @@ let addLink = (guild) => {
             TableName: "sumi",
             Item: data.Item
             }, (error, response) => {
-            if(error) { console.log(error) }
-            else { console.log(response) }
+              if(error) { console.log(error) }
+              else { console.log(response) }
             })
+            if(data.Item.members[message.author.id].links != undefined) {
+              // does have haiku property -> add 1
+              data.Item.members[message.author.id].links += 1;
+              ddb.put({
+                TableName: "sumi",
+                Item : data.Item
+              }, (error, data) => {
+                if(error) {
+                  console.log(error);
+                } else {
+                  // user was updated
+                }
+              })
+            } else {
+              // does not have the haiku property
+              data.Item.members[message.author.id].links = 1;
+              ddb.put({
+                TableName: "sumi",
+                Item : data.Item
+              }, (error, data) => {
+                if(error) {
+                  console.log(error);
+                } else {
+                  // user was updated
+                }
+              })
+            }
         }
       }
   })
 }
 
-let addHaiku = (guild) => {
+let addHaiku = (message, authorid, valid) => {
+  let guild = message.channel.guild;
   ddb.get({
     TableName: "sumi", 
     Key: { "guildid": guild.id }},
@@ -122,9 +230,38 @@ let addHaiku = (guild) => {
             TableName: "sumi",
             Item: data.Item
             }, (error, response) => {
-            if(error) { console.log(error) }
-            else { console.log(response) }
+              if(error) { console.log(error) }
+              else { console.log(response) }
             })
+            if(valid) {
+              if(data.Item.members[authorid].haikus != undefined) {
+                // does have haiku property -> add 1
+                data.Item.members[authorid].haikus += 1;
+                ddb.put({
+                  TableName: "sumi",
+                  Item : data.Item
+                }, (error, data) => {
+                  if(error) {
+                    console.log(error);
+                  } else {
+                    // user was updated
+                  }
+                })
+              } else {
+                // does not have the haiku property
+                data.Item.members[authorid].haikus = 1;
+                ddb.put({
+                  TableName: "sumi",
+                  Item : data.Item
+                }, (error, data) => {
+                  if(error) {
+                    console.log(error);
+                  } else {
+                    // user was updated
+                  }
+                })
+              }
+            }
         }
       }
   })
@@ -206,14 +343,14 @@ let addUser = (userid, guildid, username) => {
     TableName: "sumi", 
     Key: { "guildid": guildid }},
     (error, data) => {
-        if(error) { console.log(error) }
+      if(error) { console.log(error) }
       else { 
         // console.log(data.Item.members);
         let member = data.Item.members[userid];
         if(member != undefined) {
           // user is already in db
         } else {
-          // user is new > add to db
+          // user is new -> add to db
           data.Item.members[userid] = {
             name: username,
             sendLinks: false,
@@ -222,6 +359,8 @@ let addUser = (userid, guildid, username) => {
             goodbyes: 0,
             helloToday: false,
             goodbyeToday: false,
+            haikus: 0,
+            links: 0,
             sumiscore: 0,
           }
           ddb.put({
@@ -292,7 +431,7 @@ client.on("messageCreate", (message) => {
             let data = message.content.split(".com")[1];
             message.suppressEmbeds();
             message.reply(`https://fxtwitter.com${data}`);
-            addLink(message.channel.guild);
+            addLink(message);
           } else {
             console.log("links are turned off");
           }
@@ -318,22 +457,40 @@ client.on("messageCreate", (message) => {
         }
     })
   }
+  // thank you sumi
+  else if(message.content.toLowerCase().startsWith("thank you sumi") || message.content.toLowerCase().startsWith("ty sumi")) {
+    message.react(`${emojis[Math.floor(Math.random()*emojis.length)]}`);
+    message.reply(`my pleasure`);
+  }
   // hey sumi
   else if(message.content.toLowerCase().startsWith("hey sumi") || message.content.toLowerCase().startsWith("hello sumi") || message.content.toLowerCase().startsWith("hi sumi") || message.content.toLowerCase().startsWith("wsg sumi") || message.content.toLowerCase().startsWith("gm sumi")) {
       message.react(`${emojis[Math.floor(Math.random()*emojis.length)]}`);
       message.reply(`${greeting[Math.floor(Math.random()*greeting.length)]} ${faces[Math.floor(Math.random()*faces.length)]}`);
-      addHello(message.channel.guild);
+      addHello(message);
   }
   // bye sumi
   else if(message.content.toLowerCase().startsWith("bye sumi") || message.content.toLowerCase().startsWith("goodnight sumi") || message.content.toLowerCase().startsWith("gn sumi") || message.content.toLowerCase().startsWith("peace sumi")) {
       message.react(`${emojis[Math.floor(Math.random()*emojis.length)]}`);
       message.reply(`${leaving[Math.floor(Math.random()*leaving.length)]} ${faces[Math.floor(Math.random()*faces.length)]}`);
-      addGoodbye(message.channel.guild);
+      addGoodbye(message);
   } 
   // reply to haikubot
   else if(message.author.username == "HaikuBot" && message.author.bot && message.embeds.length > 0) {
       setTimeout(() => { message.channel.send(`${adjs[Math.floor(Math.random()*adjs.length)]} haiku`); }, 500);
-      addHaiku(message.channel.guild);
+      message.channel.messages.fetch({ limit: 2 })
+      .then(messages => {
+        // console.log(message.embeds[0])
+        console.log(messages.last().member.nickname)
+        console.log(message.embeds[0].data.footer.text.split(" ")[1])
+        if(messages.last().member.nickname == message.embeds[0].data.footer.text.split(" ")[1]) {
+          console.log("TRUE")
+          addHaiku(message, messages.last().author.id, true)
+        } else {
+          addHaiku(message, "-1", false)
+        }
+      })
+      .catch(error => { console.log(error) })
+      
   } 
 
   else if(message.mentions.repliedUser != undefined){
@@ -397,8 +554,37 @@ client.on("messageCreate", (message) => {
           }
         })
       }
+      // <mystats> show personal stats
+      if(message.content.split(" ")[1] == "mystats" || message.content.split(" ")[1] == "ms") {
+        ddb.get({TableName: "sumi", Key: { 'guildid': message.guildId }}, (error, stats) => {
+          if(error) {
+            console.log(error);
+          } else {
+            let statsEmbed = new EmbedBuilder()
+            .setColor(0xF78DA7)
+            .setTitle(`${stats.Item.members[message.author.id].name}`)
+            .setThumbnail(`${message.author.avatarURL({size:4096})}`)
+            .addFields(
+              { name: 'links', value: "" + stats.Item.members[message.author.id].links },
+              { name: 'hellos', value: "" + stats.Item.members[message.author.id].hellos },
+              { name: 'goodbyes', value: "" + stats.Item.members[message.author.id].goodbyes },
+              { name: 'haikus', value: "" + stats.Item.members[message.author.id].haikus },
+              { name: 'send links?', value: "" + stats.Item.members[message.author.id].sendLinks },
+            )
+            .setTimestamp()
+            .setFooter({ text: 'with 💖 from sumi' });
+
+            message.channel.send({embeds: [statsEmbed]});
+          }
+        })
+      }
+      // a stand in until i automate the db creation when she joins a server for the first time
       else if(message.content.split(" ")[1] == "create") {
-        makeGuild(message.guild)
+        if(message.member.permissions.has("ManageChannels")) {
+          makeGuild(message.guild, message);
+        } else {
+          message.channel.send("🚫 permission denied 🚫");
+        }
       }
       // <serverbanner> send the server's banner image
       else if(message.content.split(" ")[1] == "serverbanner" || message.content.split(" ")[1] == "sb") {
@@ -462,7 +648,7 @@ client.on("messageCreate", (message) => {
           } else {
             let data = stats.Item.members;
             let memberslist = [];
-            Object.keys(data).forEach((key, i) => { memberslist.push(`${i+1}: ${data[key].name}`) })
+            Object.keys(data).forEach((key, i) => { memberslist.push(`${i+1}: ${data[key].name} - ${data[key].sumiscore}`) })
             // console.log(stats.Item.members)
             // console.log(...memberslist)
             let membersEmbed = new EmbedBuilder()
@@ -568,6 +754,8 @@ __________________________________
 
 
 *server settings override any personal settings
+**if sumi is new to your server and not working as intended - use <sumi create> to make sure your guild has been added to the database! 
+[WARNING] - <sumi create> will reset your server to default settings and stats
 \`\`\`
 `
 
