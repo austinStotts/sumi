@@ -291,7 +291,7 @@ client.on("messageCreate", (message) => {
           if(data.Item.isSendingLinks && data.Item.members[message.author.id].sendLinks) {
             let data = message.content.split(".com")[1];
             message.suppressEmbeds();
-            message.reply(`https://vxtwitter.com${data}`);
+            message.reply(`https://fxtwitter.com${data}`);
             addLink(message.channel.guild);
           } else {
             console.log("links are turned off");
