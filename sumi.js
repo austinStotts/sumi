@@ -419,6 +419,8 @@ client.on("messageCreate", (message) => {
   updageIconID(message.guild);
   addUser(message.author.id, message.guild.id, message.author.displayName);
   // console.log(message); // uncomment to print all messages
+
+  // new link check
   let words = message.content.split(" ");
   words.forEach(word => {
     if(word.startsWith("https://x.com") || word.startsWith("https://twitter.com")) {
@@ -444,7 +446,7 @@ client.on("messageCreate", (message) => {
   if (message.content.startsWith("https://x.com") || message.content.startsWith("https://twitter.com")) {
     // needs to be cleaned up
 
-    
+
     // ddb.get({
     //   TableName: "sumi", 
     //   Key: { "guildid": message.guild.id }},
@@ -462,6 +464,7 @@ client.on("messageCreate", (message) => {
     //     }
     // })
   }
+
   else if (message.content.startsWith("https://tiktok.com") || message.content.startsWith("https://www.tiktok.com")) {
     ddb.get({
       TableName: "sumi", 
@@ -481,19 +484,36 @@ client.on("messageCreate", (message) => {
         }
     })
   }
+
   // thank you sumi
-  else if(message.content.toLowerCase().startsWith("thank you sumi") || message.content.toLowerCase().startsWith("ty sumi")) {
+  else if(message.content.toLowerCase().startsWith("thank you sumi") || 
+          message.content.toLowerCase().startsWith("ty sumi") || 
+          message.content.toLowerCase().startsWith("thanks sumi") ||
+          message.content.toLowerCase().startsWith("bless you sumi")
+        ){
     message.react(`${emojis[Math.floor(Math.random()*emojis.length)]}`);
     message.reply(`my pleasure`);
   }
+
   // hey sumi
-  else if(message.content.toLowerCase().startsWith("hey sumi") || message.content.toLowerCase().startsWith("hello sumi") || message.content.toLowerCase().startsWith("hi sumi") || message.content.toLowerCase().startsWith("wsg sumi") || message.content.toLowerCase().startsWith("gm sumi")) {
+  else if(message.content.toLowerCase().startsWith("hey sumi") || 
+          message.content.toLowerCase().startsWith("hello sumi") || 
+          message.content.toLowerCase().startsWith("hi sumi") || 
+          message.content.toLowerCase().startsWith("wsg sumi") || 
+          message.content.toLowerCase().startsWith("gm sumi") ||
+          message.content.toLowerCase().startsWith("yo sumi")
+        ){
       message.react(`${emojis[Math.floor(Math.random()*emojis.length)]}`);
       message.reply(`${greeting[Math.floor(Math.random()*greeting.length)]} ${faces[Math.floor(Math.random()*faces.length)]}`);
       addHello(message);
   }
+
   // bye sumi
-  else if(message.content.toLowerCase().startsWith("bye sumi") || message.content.toLowerCase().startsWith("goodnight sumi") || message.content.toLowerCase().startsWith("gn sumi") || message.content.toLowerCase().startsWith("peace sumi")) {
+  else if(message.content.toLowerCase().startsWith("bye sumi") || 
+          message.content.toLowerCase().startsWith("goodnight sumi") || 
+          message.content.toLowerCase().startsWith("gn sumi") || 
+          message.content.toLowerCase().startsWith("peace sumi")
+        ){
       message.react(`${emojis[Math.floor(Math.random()*emojis.length)]}`);
       message.reply(`${leaving[Math.floor(Math.random()*leaving.length)]} ${faces[Math.floor(Math.random()*faces.length)]}`);
       addGoodbye(message);
@@ -517,6 +537,8 @@ client.on("messageCreate", (message) => {
       
   } 
 
+  // reply methods
+  // replying to sumi
   else if(message.mentions.repliedUser != undefined){
     if(message.mentions.repliedUser.id == "1176256487035785257" && message.content.toLowerCase() == "delete") {
       message.channel.messages.delete(message.reference.messageId);
