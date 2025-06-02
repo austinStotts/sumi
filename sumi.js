@@ -419,24 +419,48 @@ client.on("messageCreate", (message) => {
   updageIconID(message.guild);
   addUser(message.author.id, message.guild.id, message.author.displayName);
   // console.log(message); // uncomment to print all messages
+  let words = message.content.split(" ");
+  words.forEach(word => {
+    if(word.startsWith("https://x.com") || word.startsWith("https://twitter.com")) {
+      ddb.get({
+        TableName: "sumi", 
+        Key: { "guildid": message.guild.id }},
+        (error, data) => {
+            if(error) { console.log(error) }
+          else {
+            if(data.Item.isSendingLinks && data.Item.members[message.author.id].sendLinks) {
+              let data = word.split(".com")[1];
+              message.suppressEmbeds();
+              message.reply(`https://fxtwitter.com${data}`);
+              addLink(message);
+            } else {
+              console.log("links are turned off");
+            }
+          }
+      })
+    }
+  })
 
   if (message.content.startsWith("https://x.com") || message.content.startsWith("https://twitter.com")) {
-    ddb.get({
-      TableName: "sumi", 
-      Key: { "guildid": message.guild.id }},
-      (error, data) => {
-          if(error) { console.log(error) }
-        else {
-          if(data.Item.isSendingLinks && data.Item.members[message.author.id].sendLinks) {
-            let data = message.content.split(".com")[1];
-            message.suppressEmbeds();
-            message.reply(`https://fxtwitter.com${data}`);
-            addLink(message);
-          } else {
-            console.log("links are turned off");
-          }
-        }
-    })
+    // needs to be cleaned up
+
+    
+    // ddb.get({
+    //   TableName: "sumi", 
+    //   Key: { "guildid": message.guild.id }},
+    //   (error, data) => {
+    //       if(error) { console.log(error) }
+    //     else {
+    //       if(data.Item.isSendingLinks && data.Item.members[message.author.id].sendLinks) {
+    //         let data = message.content.split(".com")[1];
+    //         message.suppressEmbeds();
+    //         message.reply(`https://fxtwitter.com${data}`);
+    //         addLink(message);
+    //       } else {
+    //         console.log("links are turned off");
+    //       }
+    //     }
+    // })
   }
   else if (message.content.startsWith("https://tiktok.com") || message.content.startsWith("https://www.tiktok.com")) {
     ddb.get({
