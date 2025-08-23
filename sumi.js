@@ -416,7 +416,7 @@ client.on("ready", () => {
 
 
 client.on("messageCreate", (message) => {
-  updageIconID(message.guild);
+  // updageIconID(message.guild);
   addUser(message.author.id, message.guild.id, message.author.displayName);
   // console.log(message); // uncomment to print all messages
 
@@ -760,44 +760,33 @@ client.login(ts);
 let helptext = 
 `
 \`\`\`
-
 any x.com or twitter.com link will automatically be sent again as a vxtwitter.com link to allow for embeds
 use the following <sumi> commands to get server info / other usefull things:
-——————————————————————————————————
 __________________________________
 <sumi help> - will show this message
-——————————————————————————————————
 __________________________________
 <sumi serverbanner || sb> - sends this server's banner in the largest resolution discord has as a .png
 <sumi serversplash || ss> - sends this server's splash image in the largest resolution discord has as a .png
 🔒 <sumi serverdata || sd> - show guild data from discord
-——————————————————————————————————
 __________________________________
 <sumi pfp> - send the user's avatar in the largest size discord has available
 <sumi banner || bn> - send the user's profile banner in the largest size discord has available
 <sumi mydata || md> - show user data from discord
-——————————————————————————————————
 __________________________________
 <sumi stats || st> - send usage counts for sumi's primary functions
 <sumi mystats || ms>* - show personal counts and settings (coming soon)
 <sumi members || mb> - list all members sumi keeps track of (buggy)
-——————————————————————————————————
 __________________________________
 🔒 <sumi toggle || tg> - turn on/off link sending for entire server
 <sumi toggleme || tm>* - turn on/off link sending for individual
-——————————————————————————————————
 __________________________________
 <hi/hello/wsg sumi> - to say hello
 <bye/goodbye/gn sumi> - to say goodbye
-——————————————————————————————————
 __________________________________
 <sumi translate [country code]> *in a reply* - to translate a message
-<sumi language codes> - to list all available language codes
-——————————————————————————————————
+<sumi languages> - to list all available language codes
 __________________________________
 <delete> *in a reply* - to delete sumi's message / sumi can only delete her own messages
-——————————————————————————————————
-
 
 *server settings override any personal settings
 **if sumi is new to your server and not working as intended - use <sumi create> to make sure your guild has been added to the database! 
@@ -806,6 +795,7 @@ __________________________________
 `
 
 const languages = `
+\`\`\`
 Afrikaans:         	af
 Albanian:	          sq
 Amharic:	          am
@@ -881,4 +871,5 @@ Urdu:	              ur
 Uzbek:	            uz
 Vietnamese:	        vi
 Welsh:	            cy
+\`\`\`
 `
